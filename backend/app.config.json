@@ -1,0 +1,8 @@
+{
+	"port" : ":1331",
+	"db_user" : "polres_log_user_surat",
+	"db_password" : "polres_123456_log_surat",
+	"db_name" : "polres_log_surat_db",
+	"db_host" : "postgres",
+	"db_port" : "5432"
+}

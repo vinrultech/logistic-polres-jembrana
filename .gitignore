@@ -1,0 +1,13 @@
+posgres
+
+frontend/node_modules
+frontend/dist
+frontend/yarn-error.log*
+frontend/yarn-debug.log*
+frontend/npm-debug.log*
+
+backend/main
+backend/main.exe
+backend/info.log*
+backend/error.log*
+backend/upload

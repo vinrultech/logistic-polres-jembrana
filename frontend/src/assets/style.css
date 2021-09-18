@@ -1,0 +1,26 @@
+.breadcums-disabled {
+    color: grey;
+    pointer-events: none;
+}
+
+.breadcums-enabled {
+    color: #1976d2;
+    cursor: pointer;
+
+}
+
+.toast-success {
+    background-color: #0D47A1;
+}
+
+.toast-info {
+    background-color: #37474F;
+}
+
+.toast-error {
+    background-color: #D50000;
+}
+
+.toast-warning {
+    background-color: #E65100;
+}
