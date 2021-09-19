@@ -6,5 +6,9 @@ export default {
     limit: {
         value: 25,
         text: '25'
-    }
+    },
+    nama: '',
+    account: '',
+    foto: '',
+    hp: '',
 }

@@ -11,11 +11,11 @@ export default {
             text: message !== undefined || message !== null ? message : err,
             willClose: () => {
                 if (code === 400 || code === 401 || code === 403 ||  code === 405) {
-                    sessionStorage.removeItem("pelayanan-desa-melaya:token")
-                    sessionStorage.removeItem("pelayanan-desa-melaya:username")
-                    sessionStorage.removeItem("pelayanan-desa-melaya:role");
-                    sessionStorage.removeItem("pelayanan-desa-melaya:nama");
-                    sessionStorage.removeItem("pelayanan-desa-melaya:foto");
+                    sessionStorage.removeItem("logistic-polres-jembrana:token")
+                    sessionStorage.removeItem("logistic-polres-jembrana:username")
+                    sessionStorage.removeItem("logistic-polres-jembrana:role");
+                    sessionStorage.removeItem("logistic-polres-jembrana:nama");
+                    sessionStorage.removeItem("logistic-polres-jembrana:foto");
                     router.push('/login');
                 }
 
@@ -23,39 +23,39 @@ export default {
         });
     },
     session() {
-        return sessionStorage.getItem("pelayanan-desa-melaya:token");
+        return sessionStorage.getItem("logistic-polres-jembrana:token");
     },
     role() {
-        return sessionStorage.getItem("pelayanan-desa-melaya:role");
+        return sessionStorage.getItem("logistic-polres-jembrana:role");
     },
     username() {
-        return sessionStorage.getItem("pelayanan-desa-melaya:username");
+        return sessionStorage.getItem("logistic-polres-jembrana:username");
     },
     nama() {
-        return sessionStorage.getItem("pelayanan-desa-melaya:nama");
+        return sessionStorage.getItem("logistic-polres-jembrana:nama");
     },
     foto() {
-        return sessionStorage.getItem("pelayanan-desa-melaya:foto");
+        return sessionStorage.getItem("logistic-polres-jembrana:foto");
     },
     removeSession() {
-        sessionStorage.removeItem("pelayanan-desa-melaya:token");
-        sessionStorage.removeItem("pelayanan-desa-melaya:username");
-        sessionStorage.removeItem("pelayanan-desa-melaya:role");
-        sessionStorage.removeItem("pelayanan-desa-melaya:nama");
-        sessionStorage.removeItem("pelayanan-desa-melaya:foto");
+        sessionStorage.removeItem("logistic-polres-jembrana:token");
+        sessionStorage.removeItem("logistic-polres-jembrana:username");
+        sessionStorage.removeItem("logistic-polres-jembrana:role");
+        sessionStorage.removeItem("logistic-polres-jembrana:nama");
+        sessionStorage.removeItem("logistic-polres-jembrana:foto");
     },
     addSession(token, username, role, nama, foto) {
-        sessionStorage.setItem("pelayanan-desa-melaya:token", token);
-        sessionStorage.setItem("pelayanan-desa-melaya:username", username);
-        sessionStorage.setItem("pelayanan-desa-melaya:role", role);
-        sessionStorage.setItem("pelayanan-desa-melaya:nama", nama);
-        sessionStorage.setItem("pelayanan-desa-melaya:foto", foto);
+        sessionStorage.setItem("logistic-polres-jembrana:token", token);
+        sessionStorage.setItem("logistic-polres-jembrana:username", username);
+        sessionStorage.setItem("logistic-polres-jembrana:role", role);
+        sessionStorage.setItem("logistic-polres-jembrana:nama", nama);
+        sessionStorage.setItem("logistic-polres-jembrana:foto", foto);
     },
     changeNama(nama) {
-        sessionStorage.setItem("pelayanan-desa-melaya:nama", nama);
+        sessionStorage.setItem("logistic-polres-jembrana:nama", nama);
     },
     changeFoto(foto) {
-        sessionStorage.setItem("pelayanan-desa-melaya:foto", foto);
+        sessionStorage.setItem("logistic-polres-jembrana:foto", foto);
     },
     breadcumOne(one) {
         const indexs = [];

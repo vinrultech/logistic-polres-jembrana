@@ -10,5 +10,17 @@ export default {
     },
     LIMIT: (state, payload) => {
         state.limit = payload;
+    },
+    NAMA: (state, payload) => {
+        state.nama = payload;
+    },
+    ACCOUNT: (state, payload) => {
+        state.account = payload;
+    },
+    FOTO: (state, payload) => {
+        state.foto = payload;
+    },
+    HP: (state, payload) => {
+        state.hp = payload;
     }
 }

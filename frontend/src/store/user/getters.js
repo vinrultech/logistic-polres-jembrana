@@ -13,5 +13,17 @@ export default {
     },
     limit: (state) => {
         return state.limit;
+    },
+    nama: (state) => {
+        return state.nama;
+    },
+    account: (state) => {
+        return state.account;
+    },
+    foto: (state) => {
+        return state.foto === null ? '' : state.foto;
+    },
+    hp: (state) => {
+        return state.hp;
     }
 }

@@ -77,17 +77,31 @@
         </v-list-item>
       </v-list>
       <v-divider></v-divider>
-      <v-list dense class="brown darken-1 position-under">
+      <v-list
+        dense
+        class="brown darken-1"
+        v-bind:class="{ 'position-under-mini': mini, 'position-under': !mini }"
+      >
         <v-list-item-group v-model="selectedItem" color="white">
           <template v-for="(item, i) in items">
-            <v-row v-if="item.heading" :key="item.heading" align="center">
+            <v-row
+              v-if="item.heading"
+              :key="item.heading"
+              align="center"
+              v-show="!mini"
+            >
               <v-col cols="6">
                 <v-subheader class="white--text" v-if="item.heading">{{
                   item.heading
                 }}</v-subheader>
               </v-col>
             </v-row>
-            <v-divider v-else-if="item.divider" :key="i" light class="mx-2 white"></v-divider>
+            <v-divider
+              v-else-if="item.divider"
+              :key="i"
+              light
+              class="mx-2 white"
+            ></v-divider>
             <v-list-group
               v-else-if="item.children"
               :key="item.text"
@@ -121,19 +135,44 @@
                 </v-list-item-content>
               </v-list-item>
             </v-list-group>
-            <v-list-item v-else :key="item.text" @click="to(item.href)" link>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <v-list-item-icon>
-                <v-icon left :size="item.size" color="white">{{
-                  item.icon
-                }}</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title class="white--text">{{
-                  item.text
-                }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+            <div v-else :key="item.text">
+              <v-list-item v-if="!mini" @click="to(item.href)" link>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <v-list-item-icon>
+                  <v-icon left :size="item.size" color="white">{{
+                    item.icon
+                  }}</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title class="white--text">{{
+                    item.text
+                  }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-tooltip right v-else-if="mini">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-list-item
+                    @click="to(item.href)"
+                    link
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <v-list-item-icon>
+                      <v-icon left :size="item.size" color="white">{{
+                        item.icon
+                      }}</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title class="white--text">{{
+                        item.text
+                      }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+                <span>{{ item.text }}</span>
+              </v-tooltip>
+            </div>
           </template>
         </v-list-item-group>
       </v-list>
@@ -163,58 +202,59 @@ export default {
     items: [
       { icon: "fas fa-home", text: "Dashboard", href: "/admin", size: 20 },
       { heading: "Master Data" },
-      { icon: "fas fa-cookie-bite", text: "Kategori", href: "/admin/kategori" , size: 20},
+      {
+        icon: "fas fa-cookie-bite",
+        text: "Kategori",
+        href: "/admin/kategori",
+        size: 20,
+      },
       { heading: "Surat" },
-      { icon: "fas fa-envelope", text: "Surat Masuk", href: "/admin/surat_masuk" , size: 20},
+      {
+        icon: "fas fa-envelope",
+        text: "Surat Masuk",
+        href: "/admin/surat_masuk",
+        size: 20,
+      },
       {
         icon: "fas fa-envelope-open-text",
         text: "Surat Keluar",
         href: "/admin/surat_keluar",
-        size: 20
+        size: 20,
       },
       {
         icon: "fas fa-mail-bulk",
         text: "Juknis",
         href: "/admin/juknis",
-        size: 17
+        size: 17,
       },
       { heading: "Inventory" },
-      { icon: "fas fa-shopping-basket", text: "Barang", href: "/admin/inventory", size: 16 },
-      { icon: "fas fa-warehouse", text: "Asset Tetap", href: "/admin/asset_tetap", size: 16 },
+      {
+        icon: "fas fa-shopping-basket",
+        text: "Barang",
+        href: "/admin/inventory",
+        size: 16,
+      },
+      {
+        icon: "fas fa-warehouse",
+        text: "Asset Tetap",
+        href: "/admin/asset_tetap",
+        size: 16,
+      },
       { heading: "Tranksasi" },
-      { icon: "fas fa-database", text: "Inventory Masuk", href: "/admin/inventory_masuk", size: 16 },
-      { icon: "fas fa-table", text: "Inventory Keluar", href: "/admin/inventory_keluar", size: 16 },
+      {
+        icon: "fas fa-database",
+        text: "Inventory Masuk",
+        href: "/admin/inventory_masuk",
+        size: 16,
+      },
+      {
+        icon: "fas fa-table",
+        text: "Inventory Keluar",
+        href: "/admin/inventory_keluar",
+        size: 16,
+      },
       { divider: true },
       { icon: "fas fa-users", text: "User", href: "/admin/user", size: 16 },
-      /*
-      { icon: "fas fa-id-card-alt", text: "Berkas", href: "/admin/berkas", size: 20 },
-      {
-        icon: "fas fa-person-booth",
-        text: "Petugas Ukur",
-        href: "/admin/petugas_ukur",
-        size: 20
-      },
-      {
-        icon: "fas fa-chalkboard-teacher",
-        text: "Petugas Gambar",
-        href: "/admin/petugas_gambar",
-        size: 18
-      },
-      {
-        icon: "fas fa-exclamation-triangle",
-        text: "Problem",
-        href: "/admin/problem",
-        size: 20
-      },
-      */
-      /*
-      {
-        icon: "fas fa-cogs",
-        text: "Settings",
-        href: "/admin/settings",
-        size: 18
-      },
-      */
     ],
     host: vm.$host,
   }),
@@ -239,22 +279,17 @@ export default {
       this.$router.push("/login");
     },
     to(href, menu) {
-      //console.log(href);
-      //console.log(this.$router.history.current.path)
       if (this.$router.history.current.path !== href) {
         this.$router.push(href);
         if (menu !== undefined) {
           this.$store.dispatch("constant/menu", menu);
         }
       }
-
-      //this.$store.dispatch("constant/menu", menu);
     },
   },
   mounted() {
     this.$store.dispatch("user/nama");
     this.$store.dispatch("user/foto");
-    //console.log(this.$router.history.current.path);
 
     const path = this.$router.history.current.path;
 
@@ -277,7 +312,7 @@ export default {
       this.$store.dispatch("constant/menu", 8);
     } else if (routes[2] === "user") {
       this.$store.dispatch("constant/menu", 9);
-    } else  {
+    } else {
       this.$store.dispatch("constant/menu", 0);
     }
   },
@@ -312,6 +347,11 @@ export default {
 
 .position-under {
   margin-top: 132px;
+  z-index: 98;
+}
+
+.position-under-mini {
+  margin-top: 80px;
   z-index: 98;
 }
 </style>
