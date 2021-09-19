@@ -253,6 +253,42 @@ let router = new Router({
       },
       component: () => import( /* webpackChunkName: "about" */ './views/asset_tetap/edit.vue'),
     },
+    {
+      path: '/admin/inventory_masuk',
+      name: 'inventory_masuk',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/inventory_masuk/index.vue'),
+    },
+    {
+      path: '/admin/inventory_masuk/create',
+      name: 'create_inventory_masuk',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/inventory_masuk/add.vue'),
+    },
+    {
+      path: '/admin/inventory_keluar',
+      name: 'inventory_keluar',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/inventory_keluar/index.vue'),
+    },
+    {
+      path: '/admin/inventory_keluar/create',
+      name: 'create_inventory_keluar',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/inventory_keluar/add.vue'),
+    },
   ]
 });
 

@@ -4,6 +4,8 @@ import Vuex from 'vuex'
 import user from './store/user'
 import kategori from './store/kategori'
 import inventory from './store/inventory'
+import inventory_masuk from './store/inventory_masuk'
+import inventory_keluar from './store/inventory_keluar'
 import asset_tetap from './store/asset_tetap'
 import surat_masuk from './store/surat_masuk'
 import surat_keluar from './store/surat_keluar'
@@ -21,6 +23,8 @@ export default new Vuex.Store({
         surat_keluar,
         juknis,
         inventory,
+        inventory_masuk,
+        inventory_keluar,
         asset_tetap,
         home,
         constant,
