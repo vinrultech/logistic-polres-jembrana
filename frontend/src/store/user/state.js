@@ -1,11 +1,6 @@
 export default {
     items: [],
-    last_no: 0,
-    first_no: 0,
-    nama: '',
-    account: '',
-    foto: '',
-    hp: '',
+    item:{},
     prev_show: false,
     next_show: false,
     limit: {

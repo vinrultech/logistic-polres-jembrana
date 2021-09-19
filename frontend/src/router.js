@@ -83,87 +83,6 @@ let router = new Router({
       component: () => import( /* webpackChunkName: "about" */ './views/user/edit.vue'),
     },
     {
-      path: '/admin/berkas',
-      name: 'berkas',
-      meta: {
-        requiresAuth: true,
-        layout: 'admin'
-      },
-      component: () => import( /* webpackChunkName: "about" */ './views/berkas/index.vue'),
-    },
-    {
-      path: '/admin/berkas/create',
-      name: 'create_berkas',
-      meta: {
-        requiresAuth: true,
-        layout: 'admin'
-      },
-      component: () => import( /* webpackChunkName: "about" */ './views/berkas/add.vue'),
-    },
-    {
-      path: '/admin/berkas/edit/:id',
-      name: 'edit_berkas',
-      meta: {
-        requiresAuth: true,
-        layout: 'admin'
-      },
-      component: () => import( /* webpackChunkName: "about" */ './views/berkas/edit.vue'),
-    },
-    {
-      path: '/admin/petugas_ukur',
-      name: 'petugas_ukur',
-      meta: {
-        requiresAuth: true,
-        layout: 'admin'
-      },
-      component: () => import( /* webpackChunkName: "about" */ './views/petugas_ukur/index.vue'),
-    },
-    {
-      path: '/admin/petugas_ukur/detail/:id',
-      name: 'detail_petugas_ukur',
-      meta: {
-        requiresAuth: true,
-        layout: 'admin'
-      },
-      component: () => import( /* webpackChunkName: "about" */ './views/petugas_ukur/detail.vue'),
-    },
-    {
-      path: '/admin/petugas_gambar',
-      name: 'petugas_gambar',
-      meta: {
-        requiresAuth: true,
-        layout: 'admin'
-      },
-      component: () => import( /* webpackChunkName: "about" */ './views/petugas_gambar/index.vue'),
-    },
-    {
-      path: '/admin/petugas_gambar/detail/:id',
-      name: 'detail_petugas_gambar',
-      meta: {
-        requiresAuth: true,
-        layout: 'admin'
-      },
-      component: () => import( /* webpackChunkName: "about" */ './views/petugas_gambar/detail.vue'),
-    },
-    {
-      path: '/admin/problem',
-      name: 'problem',
-      meta: {
-        requiresAuth: true,
-        layout: 'admin'
-      },
-      component: () => import( /* webpackChunkName: "about" */ './views/problem/index.vue'),
-    },
-    {
-      path: '/admin/problem/detail/:id',
-      name: 'detail_problem',
-      meta: {
-        requiresAuth: true,
-        layout: 'admin'
-      },
-      component: () => import( /* webpackChunkName: "about" */ './views/problem/detail.vue'),
-    },
-    {
       path: '/admin/settings',
       name: 'wa',
       meta: {
@@ -171,6 +90,60 @@ let router = new Router({
         layout: 'admin'
       },
       component: () => import( /* webpackChunkName: "about" */ './views/setting/wa.vue'),
+    },
+    {
+      path: '/admin/kategori',
+      name: 'kategori',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/kategori/index.vue'),
+    },
+    {
+      path: '/admin/kategori/create',
+      name: 'create_kategori',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/kategori/add.vue'),
+    },
+    {
+      path: '/admin/kategori/edit/:id',
+      name: 'edit_kategori',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/kategori/edit.vue'),
+    },
+    {
+      path: '/admin/surat_masuk',
+      name: 'surat_masuk',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/surat_masuk/index.vue'),
+    },
+    {
+      path: '/admin/surat_masuk/create',
+      name: 'create_surat_masuk',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/surat_masuk/add.vue'),
+    },
+    {
+      path: '/admin/surat_masuk/edit/:id',
+      name: 'edit_surat_masuk',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/surat_masuk/edit.vue'),
     },
   ]
 });

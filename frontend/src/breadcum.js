@@ -1,50 +1,60 @@
-export const PROBLEM = (disabled) => {
-    return {
-        text: "Problem",
-        disabled: disabled,
-        href: "/admin/problem",
-        icon: "fas fa-exclamation-triangle",
-        menu: 5,
-    }
-};
-
-export const PETUGAS_GAMBAR = (disabled) => {
-    return {
-        text: "Petugas Gambar",
-        disabled: disabled,
-        href: "/admin/petugas_gambar",
-        icon: "fas fa-chalkboard-teacher",
-        menu: 4,
-    }
-};
-
-export const PETUGAS_UKUR = (disabled) => {
-    return {
-        text: "Petugas Ukur",
-        disabled: disabled,
-        href: "/admin/petugas_ukur",
-        icon: "fas fa-person-booth",
-        menu: 3,
-    }
-};
-
-export const BERKAS = (disabled) => {
-    return {
-        text: "Berkas",
-        disabled: disabled,
-        href: "/admin/berkas",
-        icon: "fas fa-id-card-alt",
-        menu: 2,
-    }
-};
-
 export const USER = (disabled) => {
     return {
         text: "User",
         disabled: disabled,
         href: "/admin/user",
         icon: "fas fa-users",
+        menu: 6,
+    }
+};
+
+export const KATEGORI = (disabled) => {
+    return {
+        text: "Kategori",
+        disabled: disabled,
+        href: "/admin/kategori",
+        icon: "fas fa-cookie-bite",
         menu: 1,
+    }
+};
+
+export const SURAT_MASUK = (disabled) => {
+    return {
+        text: "Surat Masuk",
+        disabled: disabled,
+        href: "/admin/surat_masuk",
+        icon: "fas fa-envelope",
+        menu: 2,
+    }
+};
+
+export const SURAT_KELUAR = (disabled) => {
+    return {
+        text: "Surat Keluar",
+        disabled: disabled,
+        href: "/admin/surat_keluar",
+        icon: "fas fa-envelope-open-text",
+        menu: 3,
+    }
+};
+
+export const JUKNIS = (disabled) => {
+    return {
+        text: "Juknis",
+        disabled: disabled,
+        href: "/admin/juknis",
+        icon: "fas fa-mail-bulk",
+        menu: 4,
+    }
+};
+
+export const INVENTORY = (disabled) => {
+    return {
+        text: "INVENTORY",
+        disabled: disabled,
+        href: "/admin/inventory",
+        icon: "fas fa-warehouse",
+        menu: 5,
     }
 };
 

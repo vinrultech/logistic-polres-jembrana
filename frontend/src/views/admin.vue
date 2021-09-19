@@ -17,31 +17,37 @@ export default {
   name: "admin",
   data: () => ({
     items: [
-      { icon: "fas fa-users", text: "User", href: "/admin/user", size: 18 },
       {
-        icon: "fas fa-id-card-alt",
-        text: "Berkas",
-        href: "/admin/berkas",
+        icon: "fas fa-cookie-bite",
+        text: "Kategori",
+        href: "/admin/kategori",
         size: 20,
       },
       {
-        icon: "fas fa-person-booth",
-        text: "Petugas Ukur",
-        href: "/admin/petugas_ukur",
+        icon: "fas fa-envelope",
+        text: "Surat Masuk",
+        href: "/admin/surat_masuk",
         size: 20,
       },
       {
-        icon: "fas fa-chalkboard-teacher",
-        text: "Petugas Gambar",
-        href: "/admin/petugas_gambar",
-        size: 18,
-      },
-      {
-        icon: "fas fa-exclamation-triangle",
-        text: "Problem",
-        href: "/admin/problem",
+        icon: "fas fa-envelope-open-text",
+        text: "Surat Keluar",
+        href: "/admin/surat_keluar",
         size: 20,
       },
+      {
+        icon: "fas fa-mail-bulk",
+        text: "Juknis",
+        href: "/admin/juknis",
+        size: 17,
+      },
+      {
+        icon: "fas fa-warehouse",
+        text: "Inventory",
+        href: "/admin/inventory",
+        size: 16,
+      },
+      { icon: "fas fa-users", text: "User", href: "/admin/user", size: 16 },
     ],
   }),
   mounted() {

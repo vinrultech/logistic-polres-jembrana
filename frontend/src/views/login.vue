@@ -6,18 +6,16 @@
           <v-col cols="12" md="4" class="brown accent-3">
             <v-card-text>
               <div class="text-center">
-                <img class="logo_polres" src="@/assets/logo_polres.png" />
+                <img class="logo_polres" src="@/assets/logo.svg" />
+                <h1 class="text-center display-1 teal--text text--accent-3">POLRES JEMBRANA</h1>
               </div>
             </v-card-text>
           </v-col>
           <v-col cols="12" md="8">
             <v-card-text class="mt-12">
               <h1 class="text-center display-2 teal--text text--accent-3">
-                Login Aplikasi Surat
+                Login Aplikasi Inventory dan Surat
               </h1>
-              <div class="text-center mt-4">
-                <img class="logo" src="@/assets/logo.svg" />
-              </div>
               <h4 class="text-center mt-4">
                 <v-alert v-model="error" dismissible type="error">
                   {{ errorMessage }}

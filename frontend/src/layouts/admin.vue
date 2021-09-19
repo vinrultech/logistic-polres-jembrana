@@ -1,17 +1,17 @@
 <template>
   <v-app id="keep">
-    <v-app-bar app color="green darken-3">
+    <v-app-bar app color="brown darken-1">
       <v-app-bar-nav-icon
         @click="drawer = !drawer"
-        class="d-lg-none d-xl-none d-xs-block d-sm-block d-md-block"
+        class="d-lg-none d-xl-none d-xs-block d-sm-block d-md-block white--text"
       ></v-app-bar-nav-icon>
       <v-app-bar-nav-icon
         @click="mini = !mini"
-        class="d-none d-xl-block d-lg-block"
+        class="d-none d-xl-block d-lg-block white--text"
       ></v-app-bar-nav-icon>
-      <span class="title ml-3 mr-5">
+      <span class="title ml-3 mr-5 white--text">
         Aplikasi&nbsp;
-        <span class="font-weight-light">Berkas Tracker</span>
+        <span class="font-weight-light">Inventory dan Surat</span>
       </span>
       <v-spacer />
       <v-menu bottom left>
@@ -49,7 +49,9 @@
           </v-list>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="signOut()">Sign Out<v-icon right>fas fa-sign-out-alt</v-icon></v-btn>
+            <v-btn color="primary" text @click="signOut()"
+              >Sign Out<v-icon right>fas fa-sign-out-alt</v-icon></v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-menu>
@@ -58,35 +60,34 @@
     <v-navigation-drawer
       v-model="drawer"
       app
-      color="green darken-2"
+      color="brown darken-1"
       :mini-variant="mini"
     >
-      <v-list-item>
-        <v-list-item-avatar>
-          <v-img :src="logo"></v-img>
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title class="title"
-            >Badan Pertanahan Nasional</v-list-item-title
-          >
-          <v-list-item-subtitle>Kabupaten Jembrana</v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-
+      <v-list class="text-center">
+        <img
+          v-bind:class="{ 'logo-mini': mini, logo: !mini }"
+          src="@/assets/logo.svg"
+        />
+        <v-list-item v-show="!mini">
+          <v-list-item-content>
+            <v-list-item-title class="title white--text"
+              >POLRES JEMBRANA</v-list-item-title
+            >
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
       <v-divider></v-divider>
-      <v-list dense class="green darken-1">
+      <v-list dense class="brown darken-1">
         <v-list-item-group v-model="selectedItem" color="white">
-          <template v-for="item in items">
+          <template v-for="(item, i) in items">
             <v-row v-if="item.heading" :key="item.heading" align="center">
               <v-col cols="6">
-                <v-subheader v-if="item.heading">{{
+                <v-subheader class="white--text" v-if="item.heading">{{
                   item.heading
                 }}</v-subheader>
               </v-col>
-              <v-col cols="6" class="text-center">
-                <a href="#!" class="body-2 black--text">EDIT</a>
-              </v-col>
             </v-row>
+            <v-divider v-else-if="item.divider" :key="i" light class="mx-2 white"></v-divider>
             <v-list-group
               v-else-if="item.children"
               :key="item.text"
@@ -123,10 +124,14 @@
             <v-list-item v-else :key="item.text" @click="to(item.href)" link>
               &nbsp;&nbsp;&nbsp;&nbsp;
               <v-list-item-icon>
-                <v-icon left :size="item.size">{{ item.icon }}</v-icon>
+                <v-icon left :size="item.size" color="white">{{
+                  item.icon
+                }}</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title>{{ item.text }}</v-list-item-title>
+                <v-list-item-title class="white--text">{{
+                  item.text
+                }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </template>
@@ -157,8 +162,25 @@ export default {
     logo: logoPng,
     items: [
       { icon: "fas fa-home", text: "Dashboard", href: "/admin", size: 20 },
-      
-      { icon: "fas fa-users", text: "User", href: "/admin/user", size: 18 },
+      { heading: "Master Data" },
+      { icon: "fas fa-cookie-bite", text: "Kategori", href: "/admin/kategori" , size: 20},
+      { heading: "Surat" },
+      { icon: "fas fa-envelope", text: "Surat Masuk", href: "/admin/surat_masuk" , size: 20},
+      {
+        icon: "fas fa-envelope-open-text",
+        text: "Surat Keluar",
+        href: "/admin/surat_keluar",
+        size: 20
+      },
+      {
+        icon: "fas fa-mail-bulk",
+        text: "Juknis",
+        href: "/admin/juknis",
+        size: 17
+      },
+      { divider: true },
+      { icon: "fas fa-warehouse", text: "Inventory", href: "/admin/inventory", size: 16 },
+      { icon: "fas fa-users", text: "User", href: "/admin/user", size: 16 },
       /*
       { icon: "fas fa-id-card-alt", text: "Berkas", href: "/admin/berkas", size: 20 },
       {
@@ -234,15 +256,17 @@ export default {
     const routes = path.split("/");
 
     if (routes[2] === "user") {
-      this.$store.dispatch("constant/menu", 1);
-    } else if (routes[2] === "berkas") {
+      this.$store.dispatch("constant/menu", 6);
+    } else if (routes[2] === "surat_masuk") {
       this.$store.dispatch("constant/menu", 2);
-    } else if (routes[2] === "petugas_ukur") {
+    } else if (routes[2] === "surat_keluar") {
       this.$store.dispatch("constant/menu", 3);
-    } else if (routes[2] === "petugas_gambar") {
+    } else if (routes[2] === "juknis") {
       this.$store.dispatch("constant/menu", 4);
-    } else if (routes[2] === "problem") {
+    } else if (routes[2] === "inventory") {
       this.$store.dispatch("constant/menu", 5);
+    } else if (routes[2] === "kategori") {
+      this.$store.dispatch("constant/menu", 1);
     } else {
       this.$store.dispatch("constant/menu", 0);
     }
@@ -262,6 +286,11 @@ export default {
 }
 .logo {
   width: 54px;
+  height: auto;
+}
+
+.logo-mini {
+  width: 45px;
   height: auto;
 }
 </style>
