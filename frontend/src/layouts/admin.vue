@@ -63,7 +63,7 @@
       color="brown darken-1"
       :mini-variant="mini"
     >
-      <v-list class="text-center">
+      <v-list class="text-center position-fixed brown darken-1">
         <img
           v-bind:class="{ 'logo-mini': mini, logo: !mini }"
           src="@/assets/logo.svg"
@@ -77,7 +77,7 @@
         </v-list-item>
       </v-list>
       <v-divider></v-divider>
-      <v-list dense class="brown darken-1">
+      <v-list dense class="brown darken-1 position-under">
         <v-list-item-group v-model="selectedItem" color="white">
           <template v-for="(item, i) in items">
             <v-row v-if="item.heading" :key="item.heading" align="center">
@@ -178,8 +178,13 @@ export default {
         href: "/admin/juknis",
         size: 17
       },
+      { heading: "Inventory" },
+      { icon: "fas fa-shopping-basket", text: "Barang", href: "/admin/inventory", size: 16 },
+      { icon: "fas fa-warehouse", text: "Asset Tetap", href: "/admin/asset_tetap", size: 16 },
+      { heading: "Tranksasi" },
+      { icon: "fas fa-database", text: "Inventory Masuk", href: "/admin/inventory_masuk", size: 16 },
+      { icon: "fas fa-table", text: "Inventory Keluar", href: "/admin/inventory_keluar", size: 16 },
       { divider: true },
-      { icon: "fas fa-warehouse", text: "Inventory", href: "/admin/inventory", size: 16 },
       { icon: "fas fa-users", text: "User", href: "/admin/user", size: 16 },
       /*
       { icon: "fas fa-id-card-alt", text: "Berkas", href: "/admin/berkas", size: 20 },
@@ -254,9 +259,8 @@ export default {
     const path = this.$router.history.current.path;
 
     const routes = path.split("/");
-
-    if (routes[2] === "user") {
-      this.$store.dispatch("constant/menu", 6);
+    if (routes[2] === "kategori") {
+      this.$store.dispatch("constant/menu", 1);
     } else if (routes[2] === "surat_masuk") {
       this.$store.dispatch("constant/menu", 2);
     } else if (routes[2] === "surat_keluar") {
@@ -265,9 +269,15 @@ export default {
       this.$store.dispatch("constant/menu", 4);
     } else if (routes[2] === "inventory") {
       this.$store.dispatch("constant/menu", 5);
-    } else if (routes[2] === "kategori") {
-      this.$store.dispatch("constant/menu", 1);
-    } else {
+    } else if (routes[2] === "asset_tetap") {
+      this.$store.dispatch("constant/menu", 6);
+    } else if (routes[2] === "inventory_masuk") {
+      this.$store.dispatch("constant/menu", 7);
+    } else if (routes[2] === "inventory_keluar") {
+      this.$store.dispatch("constant/menu", 8);
+    } else if (routes[2] === "user") {
+      this.$store.dispatch("constant/menu", 9);
+    } else  {
       this.$store.dispatch("constant/menu", 0);
     }
   },
@@ -292,5 +302,16 @@ export default {
 .logo-mini {
   width: 45px;
   height: auto;
+}
+
+.position-fixed {
+  position: fixed !important;
+  z-index: 99;
+  width: 100%;
+}
+
+.position-under {
+  margin-top: 132px;
+  z-index: 98;
 }
 </style>

@@ -145,6 +145,114 @@ let router = new Router({
       },
       component: () => import( /* webpackChunkName: "about" */ './views/surat_masuk/edit.vue'),
     },
+    {
+      path: '/admin/surat_keluar',
+      name: 'surat_keluar',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/surat_keluar/index.vue'),
+    },
+    {
+      path: '/admin/surat_keluar/create',
+      name: 'create_surat_keluar',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/surat_keluar/add.vue'),
+    },
+    {
+      path: '/admin/surat_keluar/edit/:id',
+      name: 'edit_surat_keluar',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/surat_keluar/edit.vue'),
+    },
+    {
+      path: '/admin/juknis',
+      name: 'juknis',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/juknis/index.vue'),
+    },
+    {
+      path: '/admin/juknis/create',
+      name: 'create_juknis',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/juknis/add.vue'),
+    },
+    {
+      path: '/admin/juknis/edit/:id',
+      name: 'edit_juknis',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/juknis/edit.vue'),
+    },
+    {
+      path: '/admin/inventory',
+      name: 'inventory',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/inventory/index.vue'),
+    },
+    {
+      path: '/admin/inventory/create',
+      name: 'create_inventory',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/inventory/add.vue'),
+    },
+    {
+      path: '/admin/inventory/edit/:id',
+      name: 'edit_inventory',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/inventory/edit.vue'),
+    },
+    {
+      path: '/admin/asset_tetap',
+      name: 'asset_tetap',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/asset_tetap/index.vue'),
+    },
+    {
+      path: '/admin/asset_tetap/create',
+      name: 'create_asset_tetap',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/asset_tetap/add.vue'),
+    },
+    {
+      path: '/admin/asset_tetap/edit/:id',
+      name: 'edit_asset_tetap',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/asset_tetap/edit.vue'),
+    },
   ]
 });
 

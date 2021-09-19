@@ -1,12 +1,4 @@
-export const USER = (disabled) => {
-    return {
-        text: "User",
-        disabled: disabled,
-        href: "/admin/user",
-        icon: "fas fa-users",
-        menu: 6,
-    }
-};
+
 
 export const KATEGORI = (disabled) => {
     return {
@@ -48,13 +40,53 @@ export const JUKNIS = (disabled) => {
     }
 };
 
-export const INVENTORY = (disabled) => {
+export const BARANG = (disabled) => {
     return {
-        text: "INVENTORY",
+        text: "Barang",
         disabled: disabled,
         href: "/admin/inventory",
-        icon: "fas fa-warehouse",
+        icon: "fas fa-shopping-basket",
         menu: 5,
+    }
+};
+
+export const ASSET_TETAP = (disabled) => {
+    return {
+        text: "Asset Tetap",
+        disabled: disabled,
+        href: "/admin/asset_tetap",
+        icon: "fas fa-warehouse",
+        menu: 6,
+    }
+};
+
+export const INVENTORY_MASUK = (disabled) => {
+    return {
+        text: "Inventory Masuk",
+        disabled: disabled,
+        href: "/admin/inventory_masuk",
+        icon: "fas fa-database",
+        menu: 7,
+    }
+};
+
+export const INVENTORY_KELUAR = (disabled) => {
+    return {
+        text: "Inventory Keluar",
+        disabled: disabled,
+        href: "/admin/inventory_keluar",
+        icon: "fas fa-table",
+        menu: 8,
+    }
+};
+
+export const USER = (disabled) => {
+    return {
+        text: "User",
+        disabled: disabled,
+        href: "/admin/user",
+        icon: "fas fa-users",
+        menu: 9,
     }
 };
 
