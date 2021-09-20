@@ -10,6 +10,7 @@
 <script>
 const default_layout = "notfound";
 import utils from "./utils";
+import injector from 'vue-inject'
 
 export default {
   name: "App",
@@ -20,6 +21,8 @@ export default {
   },
   mounted() {
     const vm = this;
+
+    injector.constant('toastr', vm.$toastr)
 
     this.$axios.interceptors.request.use(
       function (config) {
@@ -75,7 +78,7 @@ export default {
           if (vm.$swal !== undefined && vm.$router !== undefined) {
             utils.error(error, vm.$swal, vm.$router);
           }
-        } else if (error.response.config.method === "get") {
+        } else if (error.response.config.method === "get" || error.response.config.method === "delete") {
           if (vm.$swal !== undefined && vm.$router !== undefined) {
             utils.error(error, vm.$swal, vm.$router);
           }

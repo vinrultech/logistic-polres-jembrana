@@ -1,6 +1,8 @@
 package models
 
 import (
+	"database/sql"
+	"fmt"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
@@ -33,6 +35,16 @@ func ToSQLDateString(t string) string {
 	tgl := strings.Split(z[0], "-")
 	tanggal := strings.Join([]string{tgl[2], tgl[1], tgl[0]}, "-")
 	return tanggal
+}
+
+func (m *Model) RowExists(query string, args ...interface{}) bool {
+	var exists bool
+	query = fmt.Sprintf("SELECT exists (%s)", query)
+	err := m.Db.QueryRow(query, args...).Scan(&exists)
+	if err != nil && err != sql.ErrNoRows {
+		loggers.Log.Errorln(err.Error())
+	}
+	return exists
 }
 
 func (m *Model) MaxID(table string, sql string, search string, filter string) (int, error) {

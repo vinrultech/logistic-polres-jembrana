@@ -8,7 +8,9 @@ require (
 	firebase.google.com/go v3.13.0+incompatible // indirect
 	github.com/Rhymen/go-whatsapp v0.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/jinzhu/now v1.1.1 // indirect
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/jung-kurt/gofpdf v1.16.2 // indirect

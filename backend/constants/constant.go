@@ -3,7 +3,7 @@ package constants
 import (
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/vigneshuvi/GoDateFormat"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/guregu/null.v4"

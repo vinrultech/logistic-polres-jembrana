@@ -1,4 +1,7 @@
-import { DASHBOARD } from "./breadcum";
+import {
+    DASHBOARD
+} from "./breadcum";
+import _ from 'lodash';
 
 export default {
     error(err, swal, router) {
@@ -10,7 +13,7 @@ export default {
             title: "Oops...",
             text: message !== undefined || message !== null ? message : err,
             willClose: () => {
-                if (code === 400 || code === 401 || code === 403 ||  code === 405) {
+                if (code === 400 || code === 401 || code === 403 || code === 405) {
                     sessionStorage.removeItem("logistic-polres-jembrana:token")
                     sessionStorage.removeItem("logistic-polres-jembrana:username")
                     sessionStorage.removeItem("logistic-polres-jembrana:role");
@@ -69,5 +72,11 @@ export default {
         indexs.push(index)
         indexs.push(two)
         return indexs;
+    },
+    arrayUnion (arr1, arr2, identifier) {
+        const array = [...arr1, ...arr2]
+
+        return _.uniqBy(array, identifier)
     }
+
 }

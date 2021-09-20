@@ -28,4 +28,11 @@ func SetupRouters(e *echo.Echo, app *controllers.App) {
 	admin.GET("/user/account/:username", app.FetchAccount)
 	admin.POST("/user/upload_image/:username", app.UploadImage)
 	admin.PUT("/user/remove_image", app.RemoveImage)
+
+	//kategori
+	admin.POST("/kategori/create", app.CreateKategori)
+	admin.PUT("/kategori/update/:id", app.UpdateKategori)
+	admin.GET("/kategori", app.GetKategori)
+	admin.GET("/kategori/search", app.SearchKategori)
+	admin.DELETE("/kategori/remove/:id", app.RemoveKategori)
 }

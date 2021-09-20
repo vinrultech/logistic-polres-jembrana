@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/constants"
 	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/loggers"

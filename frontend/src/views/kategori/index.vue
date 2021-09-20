@@ -46,7 +46,7 @@
         </v-row>
       </v-col>
     </v-row>
-    
+
     <v-card class="elevation-6">
       <v-card-text>
         <v-simple-table>
@@ -126,7 +126,7 @@ export default {
   name: "kategori",
   components: {
     Paging,
-    Breadcum
+    Breadcum,
   },
   data: (vm) => ({
     breadcums: utils.breadcumOne(KATEGORI(true)),
@@ -153,7 +153,24 @@ export default {
       next_show: "kategori/next_show",
       limit: "kategori/limit",
       limits: "constant/limits",
+      last_id: "kategori/last_id",
     }),
+  },
+  watch: {
+    limit: function () {
+      this.refresh();
+    },
+    filterCari: function () {
+      this.cari();
+    },
+    searchText: function (val) {
+      if (!(!val || /^\s*$/.test(val))) {
+        this.isSearch = true;
+      } else {
+        this.isSearch = false;
+        this.refresh();
+      }
+    },
   },
   methods: {
     changeLimit(val) {
@@ -170,7 +187,7 @@ export default {
       this.$router.push(`/admin/kategori/edit/${id}`);
     },
     async remove(id) {
-      console.log(id);
+      //console.log(id);
       this.$swal({
         title: "Anda yakin?",
         text: "Apakah anda ingin menhapus data!",
@@ -182,30 +199,44 @@ export default {
         cancelButtonText: "Tidak",
       }).then((result) => {
         if (result.value) {
-          /*
-          this.$store.dispatch("user/remove", { vm: this, id: id }).then(() => {
-            this.get("first");
+          this.$store.dispatch("kategori/remove", id).then(() => {
+            this.refresh();
           });
-          */
-          console.log("REMOVE");
         }
       });
     },
     get() {
-      console.log("PAGINATOR")
+      this.$store.dispatch("kategori/gets", {
+        last_id: this.last_id,
+        limit: this.limit.value,
+      });
     },
     previous() {
-      console.log("prev")
+      this.$store.dispatch("kategori/prev");
     },
     next() {
-      console.log("next")
+      this.$store.dispatch("kategori/next", this.isSearch);
     },
     cari() {
-      console.log("cari")
+      this.$store.dispatch("kategori/reset");
+      this.$store.dispatch("kategori/search", {
+        last_id: this.last_id,
+        limit: this.limit.value,
+        search: this.searchText,
+        filter: this.filterCari
+      });
+    },
+    refresh() {
+      this.$store.dispatch("kategori/reset");
+      this.searchText = ""
+      this.isSearch = false
+      this.filterCari = "nama"
+      this.get();
     },
   },
   mounted() {
-    //this.get("first");
+    this.refresh();
+    //this.$store.dispatch("kategori/gets", { last_id: this.last_id, limit : 10 });
   },
 };
 </script>

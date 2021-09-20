@@ -23,6 +23,8 @@ import injector from 'vue-inject';
 
 moment.locale("id")
 
+
+
 Vue.use(progress)
 Vue.use(injector)
 

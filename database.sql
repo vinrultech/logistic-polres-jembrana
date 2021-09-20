@@ -18,3 +18,11 @@ INSERT INTO log_users
      '$2a$10$/f1QhCtKF2uFo94yZm1cdeAJ2tO.Mfd.K8LWLcPhOdr/Jh1t7TiAa', 
       'superuser'
     );
+
+CREATE TABLE "log_kategoris" (
+  "id" serial NOT NULL PRIMARY KEY,
+  "kode" character varying(20) NOT NULL,
+  "nama" character varying(250) NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

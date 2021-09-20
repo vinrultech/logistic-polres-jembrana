@@ -7,6 +7,9 @@
     </v-row>
     <v-row justify="center">
       <v-col cols="12">
+        <v-alert v-model="error" dismissible type="error">
+          {{ errorMessage }}
+        </v-alert>
         <v-card class="elevation-6">
           <v-card-text>
             <v-form ref="form" v-model="valid">
@@ -28,7 +31,7 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
-              
+
               <v-btn color="error" class="mr-4" @click="batal">
                 <v-icon dark left>fas fa-arrow-left</v-icon>Batal
               </v-btn>
@@ -38,7 +41,7 @@
                 class="mr-4"
                 @click="simpan"
               >
-                <v-icon dark left>fas fa-save</v-icon>Simpan
+                <v-icon dark left>fas fa-save</v-icon>Create
               </v-btn>
             </v-form>
           </v-card-text>
@@ -52,6 +55,7 @@
 import Breadcum from "../../components/breadcum";
 import { KATEGORI, ADD } from "../../breadcum";
 import utils from "../../utils";
+import { mapGetters } from "vuex";
 export default {
   name: "create_kategori",
   components: {
@@ -63,21 +67,34 @@ export default {
     nama: null,
     valid: true,
   }),
-  mounted() {},
+  computed: {
+    ...mapGetters({
+      errorMessage: "constant/errorMessage",
+    }),
+    error: {
+      get() {
+        return this.$store.getters["constant/error"];
+      },
+      set(val) {
+        this.$store.dispatch("constant/set_error", val);
+      },
+    },
+  },
+  mounted() {
+    this.$store.dispatch("constant/set_error", false);
+  },
   methods: {
     simpan() {
       if (this.$refs.form.validate()) {
-        this.$store.dispatch("kategori/add", {
-          item: {
-            kode: this.kode,
-            nama: this.nama,
-          }
+        this.$store.dispatch("kategori/create", {
+          kode: this.kode,
+          nama: this.nama,
         });
       }
     },
     batal() {
       this.$router.push("/admin/kategori");
-    }
+    },
   },
 };
 </script>
