@@ -97,7 +97,7 @@ export default {
             return o.id === last_id
         });
         //console.log(`start : ${index + 1} , end : ${index + limit}`)
-
+        
 
         const items = _.slice(context.state.items, index + 1, index + 1 + limit)
         if (items.length < limit) {
@@ -130,14 +130,17 @@ export default {
         const index = _.findIndex(context.state.items, function (o) {
             return o.id === last_id
         });
-
-        let start = index - 1 - limit;
-        let end = index - 1;
+        
+        
+        let start = index - (limit - 1) - limit;
+        let end = index - (limit - 1);
 
         if (context.state.display_items.length < limit) {
-            start = index - limit;
-            end = index;
+            start = index - limit - (context.state.display_items.length - 1);
+            end = index - (context.state.display_items.length - 1);
         }
+
+        
 
         const items = _.slice(context.state.items, start, end)
         if (items.length > 0) {
@@ -149,5 +152,14 @@ export default {
     }),
     reset: (context) => {
         context.commit('RESET');
-    }
+    },
+    limit: (context, payload) => {
+        context.commit('LIMIT', payload)
+        const limit = context.getters.limit.value;
+        const last_id = context.getters.last_id;
+        context.dispatch('gets', {
+            last_id: last_id,
+            limit: limit,
+        });
+    },
 }
