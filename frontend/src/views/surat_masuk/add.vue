@@ -56,7 +56,15 @@
                   ></v-textarea>
                 </v-col>
               </v-row>
-              
+              <v-row>
+                <v-col cols="12">
+                  <multiple-upload
+                    :status="'add'"
+                    class="mb-6"
+                  />
+                </v-col>
+              </v-row>
+
               <v-btn color="error" class="mr-4" @click="batal">
                 <v-icon dark left>fas fa-arrow-left</v-icon>Batal
               </v-btn>
@@ -78,12 +86,14 @@
 
 <script>
 import Breadcum from "../../components/breadcum";
+import MultipleUpload from "../../components/multiple_upload.vue";
 import { SURAT_MASUK, ADD } from "../../breadcum";
 import utils from "../../utils";
 export default {
   name: "create_surat_masuk",
   components: {
     Breadcum,
+    MultipleUpload,
   },
   data: () => ({
     breadcums: utils.breadcumTwo(SURAT_MASUK(false), ADD),
@@ -102,13 +112,13 @@ export default {
           item: {
             kode: this.kode,
             nama: this.nama,
-          }
+          },
         });
       }
     },
     batal() {
       this.$router.push("/admin/surat_masuk");
-    }
+    },
   },
 };
 </script>

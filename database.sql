@@ -26,3 +26,14 @@ CREATE TABLE "log_kategoris" (
   "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE "log_files" (
+  "id" serial NOT NULL,
+  "file_id" character varying(100) PRIMARY KEY,
+  "row_id" character varying(100) NOT NULL,
+  "tipe" character varying(20) NOT NULL,
+  "url" character varying(250) NOT NULL,
+  "filename" character varying(250) NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

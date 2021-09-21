@@ -35,4 +35,8 @@ func SetupRouters(e *echo.Echo, app *controllers.App) {
 	admin.GET("/kategori", app.GetKategori)
 	admin.GET("/kategori/search", app.SearchKategori)
 	admin.DELETE("/kategori/remove/:id", app.RemoveKategori)
+
+	//files
+	admin.POST("/files/upload", app.UploadFiles)
+	admin.POST("/files/remove", app.RemoveFile)
 }

@@ -16,7 +16,7 @@
       </v-col>
       <v-col cols="12" md="6" xs="12" sm="12" lg="6" xl="6">
         <v-row>
-          <v-col cols="4">
+          <v-col cols="12" md="4" xs="12" sm="12" lg="4" xl="4">
             <v-select
               v-model="filterCari"
               :items="filters"
@@ -29,19 +29,26 @@
               single-line
             ></v-select>
           </v-col>
-          <v-col cols="8">
-            <v-text-field
-              v-model="searchText"
-              :placeholder="'Cari'"
-              rounded
-              solo
-              prepend-inner-icon="fas fa-search"
-              :append-icon="isSearch ? 'fas fa-times' : ''"
-              single-line
-              @keydown.enter="cari()"
-              @click:append="refresh()"
-              @click:prepend-inner="refresh()"
-            ></v-text-field>
+          <v-col cols="12" md="8" xs="12" sm="12" lg="8" xl="8">
+            <v-row>
+              <v-col cols="10">
+                <v-text-field
+                  v-model="searchText"
+                  :placeholder="'Cari'"
+                  rounded
+                  solo
+                  prepend-inner-icon="fas fa-search"
+                  :append-icon="isSearch ? 'fas fa-times' : ''"
+                  single-line
+                  @keydown.enter="cari()"
+                  @click:append="refresh()"
+                  @click:prepend-inner="refresh()"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="2" style="margin-left:-15px;">
+                <v-btn elevation="4" fab small color="green" @click="cari()"><v-icon small>fas fa-search</v-icon></v-btn>
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
       </v-col>
@@ -223,14 +230,14 @@ export default {
         last_id: this.last_id,
         limit: this.limit.value,
         search: this.searchText,
-        filter: this.filterCari
+        filter: this.filterCari,
       });
     },
     refresh() {
       this.$store.dispatch("kategori/reset");
-      this.searchText = ""
-      this.isSearch = false
-      this.filterCari = "nama"
+      this.searchText = "";
+      this.isSearch = false;
+      this.filterCari = "nama";
       this.get();
     },
   },

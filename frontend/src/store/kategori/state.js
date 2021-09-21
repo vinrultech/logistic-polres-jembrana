@@ -8,7 +8,7 @@ export default {
     search: "",
     filter_search: "",
     limit: {
-        value: 5,
-        text: '5'
+        value: 25,
+        text: '25'
     }
 }

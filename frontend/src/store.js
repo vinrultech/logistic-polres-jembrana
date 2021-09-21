@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import user from './store/user'
 import kategori from './store/kategori'
+import files from './store/files'
 import inventory from './store/inventory'
 import inventory_masuk from './store/inventory_masuk'
 import inventory_keluar from './store/inventory_keluar'
@@ -19,6 +20,7 @@ export default new Vuex.Store({
     modules: {
         user,
         kategori,
+        files,
         surat_masuk,
         surat_keluar,
         juknis,

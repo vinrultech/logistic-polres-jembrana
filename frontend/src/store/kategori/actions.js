@@ -155,11 +155,13 @@ export default {
     },
     limit: (context, payload) => {
         context.commit('LIMIT', payload)
+        /*
         const limit = context.getters.limit.value;
         const last_id = context.getters.last_id;
         context.dispatch('gets', {
             last_id: last_id,
             limit: limit,
         });
+        */
     },
 }
