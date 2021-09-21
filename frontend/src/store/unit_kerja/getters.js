@@ -2,14 +2,11 @@ export default {
     items: (state) => {
         return state.display_items;
     },
-    item: (state) => (row_id) => {
-        return state.items.find(item => item.row_id === row_id);
+    item: (state) => (id) => {
+        return state.items.find(item => item.id === id);
     },
     prev_show: (state) => {
         return state.prev_show;
-    },
-    dates: (state) => {
-        return state.dates;
     },
     next_show: (state) => {
         return state.next_show;

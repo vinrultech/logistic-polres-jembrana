@@ -5,7 +5,7 @@ import _ from 'lodash';
 export default {
     fetch: injector.encase(['axios'], (axios) => (context, payload) => {
         const id = payload.id;
-        axios.get(`/admin/kategori/${id}`)
+        axios.get(`/admin/unit_kerja/${id}`)
             .then((response) => {
                 const item = response.data;
                 context.commit('ITEM', item);
@@ -13,7 +13,7 @@ export default {
     }),
     gets: injector.encase(['axios', 'toastr'], (axios, toastr) => (context, payload) => {
         let q = `limit=${payload.limit}&last_id=${payload.last_id}`
-        axios.get(`/admin/kategori?${q}`)
+        axios.get(`/admin/unit_kerja?${q}`)
             .then((response) => {
                 const items = response.data;
                 if (items.length > 0) {
@@ -32,7 +32,7 @@ export default {
     }),
     search: injector.encase(['axios', 'toastr'], (axios, toastr) => (context, payload) => {
         let q = `limit=${payload.limit}&last_id=${payload.last_id}&search=${payload.search}&filter=${payload.filter}`;
-        axios.get(`/admin/kategori/search?${q}`)
+        axios.get(`/admin/unit_kerja/search?${q}`)
             .then((response) => {
                 const items = response.data;
                 context.commit('SEARCH', {
@@ -57,11 +57,11 @@ export default {
         context.dispatch('constant/remove_error', {}, {
             root: true
         })
-        axios.post(`/admin/kategori/create`, item, {
-                message: "Kategori berhasil di tambah"
+        axios.post(`/admin/unit_kerja/create`, item, {
+                message: "Unit Kerja berhasil di tambah"
             })
             .then(() => {
-                router.push("/admin/kategori")
+                router.push("/admin/unit_kerja")
             }).catch((error) => {
                 const data = error.response.data;
                 context.dispatch('constant/error', data.message, {
@@ -71,8 +71,8 @@ export default {
     }),
     remove: injector.encase(['axios'], (axios) => (_, id) => {
         return new Promise((resolve) => {
-            axios.delete(`/admin/kategori/remove/${id}`, {
-                    message: "Kategori berhasil di hapus"
+            axios.delete(`/admin/unit_kerja/remove/${id}`, {
+                    message: "Unit Kerja berhasil di hapus"
                 })
                 .then(() => {
                     resolve(true);
@@ -82,11 +82,11 @@ export default {
     update: injector.encase(['axios', 'router'], (axios, router) => (context, payload) => {
         const id = payload.id;
         const item = payload.item;
-        axios.put(`/admin/kategori/update/${id}`, item, {
-                message: "Kategori berhasil di update"
+        axios.put(`/admin/unit_kerja/update/${id}`, item, {
+                message: "Unit Kerja berhasil di update"
             })
             .then(() => {
-                router.push("/admin/kategori")
+                router.push("/admin/unit_kerja")
             }).catch((error) => {
                 const data = error.response.data;
                 context.dispatch('constant/error', data.message, {

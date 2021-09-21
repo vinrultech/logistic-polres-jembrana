@@ -61,18 +61,22 @@
         <v-simple-table>
           <thead>
             <tr>
-              <th class="text-center">Kode</th>
               <th class="text-center">Nama</th>
+              <th class="text-center">Alamat</th>
+              <th class="text-center">Telepon</th>
               <th class="text-center action">Action</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in items" :key="item.id">
               <td>
-                {{ item.kode }}
+                {{ item.nama }}
               </td>
               <td>
-                {{ item.nama }}
+                {{ item.alamat }}
+              </td>
+              <td>
+                {{ item.telepon }}
               </td>
               <td class="text-center">
                 <v-tooltip left>
@@ -82,7 +86,6 @@
                       fab
                       dark
                       color="error"
-                      v-if="item.username !== username"
                       v-on="on"
                       @click="remove(item.id)"
                     >
@@ -98,7 +101,6 @@
                       fab
                       dark
                       color="primary"
-                      v-if="item.username !== username"
                       @click="edit(item.id)"
                       v-on="on"
                     >
@@ -128,22 +130,18 @@
 <script>
 import Paging from "../../components/paging";
 import Breadcum from "../../components/breadcum";
-import { KATEGORI } from "../../breadcum";
+import { UNIT_KERJA } from "../../breadcum";
 import utils from "../../utils";
 import { mapGetters } from "vuex";
 export default {
-  name: "kategori",
+  name: "unit_kerja",
   components: {
     Paging,
     Breadcum,
   },
   data: (vm) => ({
-    breadcums: utils.breadcumOne(KATEGORI(true)),
+    breadcums: utils.breadcumOne(UNIT_KERJA(true)),
     filters: [
-      {
-        id: "kode",
-        nama: "Kode",
-      },
       {
         id: "nama",
         nama: "Nama",
@@ -157,12 +155,12 @@ export default {
   }),
   computed: {
     ...mapGetters({
-      items: "kategori/items",
-      prev_show: "kategori/prev_show",
-      next_show: "kategori/next_show",
-      limit: "kategori/limit",
+      items: "unit_kerja/items",
+      prev_show: "unit_kerja/prev_show",
+      next_show: "unit_kerja/next_show",
+      limit: "unit_kerja/limit",
       limits: "constant/limits",
-      last_id: "kategori/last_id",
+      last_id: "unit_kerja/last_id",
     }),
   },
   watch: {
@@ -187,13 +185,13 @@ export default {
         value: val,
         text: val.toString(),
       };
-      this.$store.dispatch("kategori/limit", limit);
+      this.$store.dispatch("unit_kerja/limit", limit);
     },
     add() {
-      this.$router.push("/admin/kategori/create");
+      this.$router.push("/admin/unit_kerja/create");
     },
     edit(id) {
-      this.$router.push(`/admin/kategori/edit/${id}`);
+      this.$router.push(`/admin/unit_kerja/edit/${id}`);
     },
     async remove(id) {
       //console.log(id);
@@ -208,27 +206,27 @@ export default {
         cancelButtonText: "Tidak",
       }).then((result) => {
         if (result.value) {
-          this.$store.dispatch("kategori/remove", id).then(() => {
+          this.$store.dispatch("unit_kerja/remove", id).then(() => {
             this.refresh();
           });
         }
       });
     },
     get() {
-      this.$store.dispatch("kategori/gets", {
+      this.$store.dispatch("unit_kerja/gets", {
         last_id: this.last_id,
         limit: this.limit.value,
       });
     },
     previous() {
-      this.$store.dispatch("kategori/prev");
+      this.$store.dispatch("unit_kerja/prev");
     },
     next() {
-      this.$store.dispatch("kategori/next", this.isSearch);
+      this.$store.dispatch("unit_kerja/next", this.isSearch);
     },
     cari() {
-      this.$store.dispatch("kategori/reset");
-      this.$store.dispatch("kategori/search", {
+      this.$store.dispatch("unit_kerja/reset");
+      this.$store.dispatch("unit_kerja/search", {
         last_id: this.last_id,
         limit: this.limit.value,
         search: this.searchText,
@@ -236,7 +234,7 @@ export default {
       });
     },
     refresh() {
-      this.$store.dispatch("kategori/reset");
+      this.$store.dispatch("unit_kerja/reset");
       this.searchText = "";
       this.isSearch = false;
       this.filterCari = "nama";
@@ -245,7 +243,7 @@ export default {
   },
   mounted() {
     this.refresh();
-    //this.$store.dispatch("kategori/gets", { last_id: this.last_id, limit : 10 });
+    //this.$store.dispatch("unit_kerja/gets", { last_id: this.last_id, limit : 10 });
   },
 };
 </script>

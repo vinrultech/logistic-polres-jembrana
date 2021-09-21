@@ -7,7 +7,6 @@ export default {
     last_id: 0,
     search: "",
     filter_search: "",
-    dates: [],
     limit: {
         value: 25,
         text: '25'

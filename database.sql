@@ -49,3 +49,29 @@ CREATE TABLE "log_surat_masuks" (
   "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE "log_surat_keluars" (
+  "id" serial NOT NULL,
+  "row_id" character varying(100) PRIMARY KEY,
+  "no_surat" character varying(100) NOT NULL,
+  "tanggal_surat" character varying(100) NOT NULL,
+  "tujuan" character varying(250) NOT NULL,
+  "perihal" character varying(250) NOT NULL,
+  "isi" text NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE "log_unit_kerjas" (
+  "id" serial NOT NULL PRIMARY KEY,
+  "nama" character varying(250) NOT NULL,
+  "alamat" character varying(250) NOT NULL,
+  "telepon" character varying(250) NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE "log_user_unit_kerja" (
+  "user_id" integer NOT NULL,
+  "unit_kerja_id" integer NOT NULL
+);

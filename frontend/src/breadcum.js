@@ -90,6 +90,16 @@ export const USER = (disabled) => {
     }
 };
 
+export const UNIT_KERJA = (disabled) => {
+    return {
+        text: "Unit Kerja",
+        disabled: disabled,
+        href: "/admin/unit_kerja",
+        icon: "fas fa-users",
+        menu: 10,
+    }
+};
+
 export const DASHBOARD = {
     text: "Dashboard",
     disabled: false,

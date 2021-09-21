@@ -208,6 +208,12 @@ export default {
         href: "/admin/kategori",
         size: 20,
       },
+      {
+        icon: "fas fa-building",
+        text: "Unit Kerja",
+        href: "/admin/unit_kerja",
+        size: 20,
+      },
       { heading: "Surat" },
       {
         icon: "fas fa-envelope",
@@ -312,6 +318,8 @@ export default {
       this.$store.dispatch("constant/menu", 8);
     } else if (routes[2] === "user") {
       this.$store.dispatch("constant/menu", 9);
+    } else if (routes[2] === "unit_kerja") {
+      this.$store.dispatch("constant/menu", 10);
     } else {
       this.$store.dispatch("constant/menu", 0);
     }

@@ -32,9 +32,6 @@ export default {
         state.search = item.search;
         state.filter_search = item.filter_search;
     },
-    SET_DATES: (state, dates) => {
-        state.dates = dates
-    },
     RESET: (state) => {
         state.last_id = 0;
         state.items = [];

@@ -289,6 +289,33 @@ let router = new Router({
       },
       component: () => import( /* webpackChunkName: "about" */ './views/inventory_keluar/add.vue'),
     },
+    {
+      path: '/admin/unit_kerja',
+      name: 'unit_kerja',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/unit_kerja/index.vue'),
+    },
+    {
+      path: '/admin/unit_kerja/create',
+      name: 'create_unit_kerja',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/unit_kerja/add.vue'),
+    },
+    {
+      path: '/admin/unit_kerja/edit/:id',
+      name: 'edit_unit_kerja',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/unit_kerja/edit.vue'),
+    },
   ]
 });
 
