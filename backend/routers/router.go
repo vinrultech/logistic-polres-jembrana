@@ -24,10 +24,15 @@ func SetupRouters(e *echo.Echo, app *controllers.App) {
 	admin := api.Group("/admin", middleware.JWTWithConfig(config))
 	admin.POST("/user/create", app.CreateUser)
 	admin.PUT("/user/change", app.ChangePassword)
+	admin.PUT("/user/reset_password", app.ResetPassword)
 	admin.PUT("/user/account", app.ChangeAccount)
 	admin.GET("/user/account/:username", app.FetchAccount)
 	admin.POST("/user/upload_image/:username", app.UploadImage)
 	admin.PUT("/user/remove_image", app.RemoveImage)
+	admin.PUT("/user/update/:id", app.UpdateUser)
+	admin.DELETE("/user/remove/:id", app.RemoveUser)
+	admin.GET("/user", app.GetsUser)
+	admin.GET("/user/search", app.SearchUser)
 
 	//kategori
 	admin.POST("/kategori/create", app.CreateKategori)
@@ -47,10 +52,11 @@ func SetupRouters(e *echo.Echo, app *controllers.App) {
 	admin.GET("/surat_masuk/search", app.SearchSuratMasuk)
 	admin.DELETE("/surat_masuk/remove/:row_id", app.RemoveSuratMasuk)
 
-	//kategori
+	//unit_kerja
 	admin.POST("/unit_kerja/create", app.CreateUnitKerja)
 	admin.PUT("/unit_kerja/update/:id", app.UpdateUnitKerja)
 	admin.GET("/unit_kerja", app.GetUnitKerja)
+	admin.GET("/unit_kerja/all", app.AllUnitKerja)
 	admin.GET("/unit_kerja/search", app.SearchUnitKerja)
 	admin.DELETE("/unit_kerja/remove/:id", app.RemoveUnitKerja)
 }

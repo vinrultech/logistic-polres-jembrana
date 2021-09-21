@@ -55,6 +55,7 @@
               <th class="text-center">Nama</th>
               <th class="text-center">Username</th>
               <th class="text-center">Role</th>
+              <th class="text-center">Unit Kerja</th>
               <th class="text-center">No WA</th>
               <th class="text-center">Foto</th>
               <th class="text-center action">Action</th>
@@ -72,12 +73,15 @@
                 {{ item.role }}
               </td>
               <td>
+                {{ item.unit_kerja.nama }}
+              </td>
+              <td>
                 {{ item.hp }}
               </td>
               <td class="text-center">
                 <v-avatar size="48">
-                  <img :src="`${host}upload/${item.foto}`" v-if="item.foto !== ''"/>
-                  <v-icon size="46" v-else>fas fa-user</v-icon>
+                  <v-icon size="46" v-if="item.foto === '' || item.foto === null" >fas fa-user</v-icon>
+                  <img :src="`${host}upload/${item.foto}`" v-else/>
                 </v-avatar>
               </td>
               <td class="text-center">
@@ -112,6 +116,22 @@
                     </v-btn>
                   </template>
                   <span>Edit</span>
+                </v-tooltip>
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      x-small
+                      fab
+                      dark
+                      color="green"
+                      v-if="item.username !== username"
+                      @click="reset(item.id)"
+                      v-on="on"
+                    >
+                      <v-icon dark size="15">fas fa-lock-open</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Reset Password</span>
                 </v-tooltip>
               </td>
             </tr>
@@ -166,32 +186,28 @@ export default {
       items: "user/items",
       prev_show: "user/prev_show",
       next_show: "user/next_show",
-      first_no: "user/first_no",
-      last_no: "user/last_no",
       limit: "user/limit",
       limits: "constant/limits",
+      last_id: "user/last_id",
     }),
   },
   watch: {
     limit: function () {
-      this.get("first");
+      this.refresh();
     },
     filterCari: function () {
-      this.get("first");
+      this.cari();
     },
     searchText: function (val) {
       if (!(!val || /^\s*$/.test(val))) {
         this.isSearch = true;
       } else {
         this.isSearch = false;
-        this.get("first");
+        this.refresh();
       }
     },
   },
   methods: {
-    changeSearchText(val) {
-      this.searchText = val;
-    },
     changeLimit(val) {
       const limit = {
         value: val,
@@ -205,23 +221,11 @@ export default {
     edit(id) {
       this.$router.push(`/admin/user/edit/${id}`);
     },
-    find_items(id) {
-      return this.items.find((item) => {
-        return item.id === id;
-      });
+    reset(id) {
+      this.$router.push(`/admin/user/reset/${id}`);
     },
     async remove(id) {
-      const item = this.find_items(id);
-
-      if (item.is_delete === 1) {
-        this.$swal({
-          title: "Peringatan",
-          text: `${item.pegawai.jabatan} tidak bisa di hapus`,
-          type: "warning",
-        });
-
-        return;
-      }
+      //console.log(id);
       this.$swal({
         title: "Anda yakin?",
         text: "Apakah anda ingin menhapus data!",
@@ -233,62 +237,50 @@ export default {
         cancelButtonText: "Tidak",
       }).then((result) => {
         if (result.value) {
-          this.$store.dispatch("user/remove", { vm: this, id: id }).then(() => {
-            this.get("first");
+          this.$store.dispatch("user/remove", id).then(() => {
+            this.refresh();
           });
         }
       });
     },
-    get(action) {
-      let no = 0;
-      if (action === "next") {
-        no = this.last_no;
-      } else if (action === "prev") {
-        no = this.first_no;
-      } else {
-        no = 0;
-      }
-      let query = {
+    get() {
+      this.$store.dispatch("user/gets", {
+        last_id: this.last_id,
         limit: this.limit.value,
-        action: action,
-        no: no,
-        vm: this,
-      };
-      if (
-        !(
-          !this.searchText || /^\s*$/.test(this.searchText)
-        ) /*this.search !== "" || this.search !== null*/
-      ) {
-        query = {
-          ...query,
-          search: this.searchText,
-          filter: this.filterCari,
-        };
-      }
-      this.$store.dispatch("user/paginator", query);
+      });
     },
     previous() {
-      this.get("prev");
+      this.$store.dispatch("user/prev");
     },
     next() {
-      this.get("next");
+      this.$store.dispatch("user/next", this.isSearch);
     },
     cari() {
-      this.get("first");
+      this.$store.dispatch("user/reset");
+      this.$store.dispatch("user/search", {
+        last_id: this.last_id,
+        limit: this.limit.value,
+        search: this.searchText,
+        filter: this.filterCari,
+      });
     },
     refresh() {
+      this.$store.dispatch("user/reset");
       this.searchText = "";
-      //this.get("first");
+      this.isSearch = false;
+      this.filterCari = "nama";
+      this.get();
     },
   },
   mounted() {
-    this.get("first");
+    this.refresh();
+    //this.$store.dispatch("user/gets", { last_id: this.last_id, limit : 10 });
   },
 };
 </script>
 
 <style scoped>
 .action {
-  width: 100px;
+  width: 150px;
 }
 </style>

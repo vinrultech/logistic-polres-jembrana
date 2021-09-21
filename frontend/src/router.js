@@ -83,6 +83,15 @@ let router = new Router({
       component: () => import( /* webpackChunkName: "about" */ './views/user/edit.vue'),
     },
     {
+      path: '/admin/user/reset/:id',
+      name: 'reset_user',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/user/reset_password.vue'),
+    },
+    {
       path: '/admin/settings',
       name: 'wa',
       meta: {

@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -112,6 +113,42 @@ func (a *App) ChangePassword(c echo.Context) error {
 	})
 }
 
+func (a *App) ResetPassword(c echo.Context) error {
+	var u struct {
+		Username        string `json:"username" validate:"required"`
+		Password        string `json:"password" validate:"required"`
+		ConfirmPassword string `json:"confirm_password" validate:"required"`
+	}
+
+	if err := c.Bind(&u); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	if err := c.Validate(&u); err != nil {
+		return err
+	}
+
+	if u.Password != u.ConfirmPassword {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Password tidak sama dengan konfirmasi password")
+	}
+
+	user, err := a.M.GetUser(u.Username)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Username tidak ada")
+	}
+
+	err = a.M.ChangePassword(u.Password, user.ID)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error saat merubah password %v", err))
+	}
+
+	return c.JSON(http.StatusOK, constants.H{
+		"message": "Ok",
+	})
+}
+
 func (a *App) CreateUser(c echo.Context) error {
 
 	user := c.Get("user").(*jwt.Token)
@@ -133,18 +170,20 @@ func (a *App) CreateUser(c echo.Context) error {
 		return err
 	}
 
-	if !constants.ContainsString([]string{"superuser", "staff"}, r.Role) {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Role tidak ada")
-	}
-
 	if a.M.CheckUser(r.Username) {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Username sudah ada, cari yang lain")
 	}
 
-	err := a.M.CreateUser(r)
+	lastInsertedID, err := a.M.CreateUser(r)
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Error create")
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	err = a.M.CreateUserUnitKerja(lastInsertedID, r.UnitKerja.ID)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.JSON(http.StatusCreated, constants.H{
@@ -300,5 +339,169 @@ func (a *App) RemoveImage(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, constants.H{
 		"message": "Ok",
+	})
+}
+
+func (a *App) GetsUser(c echo.Context) error {
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*constants.JwtTandaTanganOnlineClaims)
+	role := claims.Role
+
+	if role != "superuser" {
+		loggers.Log.Errorln("Anda tidak punya kewenangan")
+		return echo.NewHTTPError(http.StatusForbidden, "Anda tidak punya kewenangan")
+	}
+
+	limitParam := c.QueryParam("limit")
+	lastIDParam := c.QueryParam("last_id")
+
+	limit, err := strconv.Atoi(limitParam)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	lastID, err := strconv.Atoi(lastIDParam)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	items, err := a.M.GetsUser(int64(lastID), limit)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, items)
+}
+
+func (a *App) SearchUser(c echo.Context) error {
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*constants.JwtTandaTanganOnlineClaims)
+	role := claims.Role
+
+	if role != "superuser" {
+		loggers.Log.Errorln("Anda tidak punya kewenangan")
+		return echo.NewHTTPError(http.StatusForbidden, "Anda tidak punya kewenangan")
+	}
+
+	limitParam := c.QueryParam("limit")
+	lastIDParam := c.QueryParam("last_id")
+	filter := c.QueryParam("filter")
+	search := c.QueryParam("search")
+
+	limit, err := strconv.Atoi(limitParam)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	lastID, err := strconv.Atoi(lastIDParam)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	items, err := a.M.SearchUser(int64(lastID), limit, search, filter)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, items)
+}
+
+func (a *App) UpdateUser(c echo.Context) error {
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*constants.JwtTandaTanganOnlineClaims)
+	role := claims.Role
+
+	if role != "superuser" {
+		loggers.Log.Errorln("Anda tidak punya kewenangan")
+		return echo.NewHTTPError(http.StatusForbidden, "Anda tidak punya kewenangan")
+	}
+
+	idParam := c.Param("id")
+
+	id, err := strconv.Atoi(idParam)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	unitKerja, err := a.M.FetchUserUnitKerja(int64(id))
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	var r models.User
+
+	if err := c.Bind(&r); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	if err := c.Validate(&r); err != nil {
+		return err
+	}
+
+	err = a.M.UpdateUser(r, int64(id))
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	if r.UnitKerja.ID != unitKerja.ID {
+		err = a.M.UpdateUserUnitKerja(int64(id), r.UnitKerja.ID)
+
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+	}
+
+	return c.JSON(http.StatusOK, constants.H{
+		"message": "Updated",
+	})
+}
+
+func (a *App) RemoveUser(c echo.Context) error {
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*constants.JwtTandaTanganOnlineClaims)
+	role := claims.Role
+
+	if role != "superuser" {
+		loggers.Log.Errorln("Anda tidak punya kewenangan")
+		return echo.NewHTTPError(http.StatusForbidden, "Anda tidak punya kewenangan")
+	}
+
+	idParam := c.Param("id")
+
+	id, err := strconv.Atoi(idParam)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	err = a.M.RemoveUser(int64(id))
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, constants.H{
+		"message": "Removed",
 	})
 }

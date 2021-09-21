@@ -7,10 +7,10 @@
     </v-row>
     <v-row justify="center">
       <v-col cols="12">
+        <v-alert v-model="error" dismissible type="error">
+          {{ errorMessage }}
+        </v-alert>
         <v-card class="elevation-6">
-          <v-toolbar>
-            <v-toolbar-title>Edit User</v-toolbar-title>
-          </v-toolbar>
           <v-card-text>
             <v-form ref="form" v-model="valid">
               <v-row>
@@ -25,31 +25,35 @@
                 <v-col cols="12" md="6" lg="6" xl="6" sm="12" xs="12">
                   <v-text-field
                     v-model="username"
-                    :rules="[(v) => !!v || 'Username dibutuhkan']"
+                    :rules="[
+                      (v) => !!v || 'Username dibutuhkan',
+                      (v) =>
+                        !!/^[a-zA-Z0-9_]+$/.test(v) ||
+                        'Username harus huruf dan angka',
+                    ]"
                     label="Username"
                     required
                     disabled
                   ></v-text-field>
                 </v-col>
               </v-row>
+
               <v-row>
-                <v-col cols="12">
+                <v-col cols="12" md="6" lg="6" xl="6" sm="12" xs="12">
                   <v-select
-                    v-model="role"
-                    :items="roles"
+                    v-model="unit_kerja_id"
+                    :items="unit_kerjas"
                     menu-props="auto"
                     item-text="nama"
                     item-value="id"
-                    label="Role"
+                    label="Unit Kerja"
                     hide-details
-                    prepend-icon="fas fa-users-cog"
+                    prepend-icon="fas fa-building"
                     single-line
                     :rules="[(v) => !!v || 'Role dibutuhkan']"
                     required
                   ></v-select>
                 </v-col>
-              </v-row>
-              <v-row>
                 <v-col cols="12" md="6" lg="6" xl="6" sm="12" xs="12">
                   <v-text-field
                     v-model="hp"
@@ -57,13 +61,6 @@
                     label="No WA"
                     required
                   ></v-text-field>
-                </v-col>
-                <v-col cols="12" md="6" lg="6" xl="6" sm="12" xs="12">
-                  <upload-foto
-                    :image="foto"
-                    @uploaded="uploaded"
-                    @removed="removed"
-                  />
                 </v-col>
               </v-row>
               <v-btn color="error" class="mr-4" @click="batal">
@@ -89,73 +86,76 @@
 import Breadcum from "../../components/breadcum";
 import { USER, EDIT } from "../../breadcum";
 import utils from "../../utils";
-import UploadFoto from "../../components/upload_foto";
+import { mapGetters } from "vuex";
+import { v1 as uuidv1 } from "uuid";
 export default {
-  name: "edit_user",
+  name: "create_user",
   components: {
     Breadcum,
-    UploadFoto,
   },
   data: () => ({
     breadcums: utils.breadcumTwo(USER(false), EDIT),
-    roles: [
-      {
-        id: "admin",
-        nama: "Admin",
-      },
-      {
-        id: "petugas_ukur",
-        nama: "Petugas Ukur",
-      },
-      {
-        id: "petugas_gambar",
-        nama: "Petugas Gambar",
-      },
-    ],
+    id: null,
     nama: null,
     username: null,
-    hp: null,
-    foto: "",
     role: null,
+    hp: null,
+    unit_kerja_id: null,
     valid: true,
   }),
+  computed: {
+    ...mapGetters({
+      unit_kerjas: "unit_kerja/all_items",
+      errorMessage: "constant/errorMessage",
+    }),
+    passwordConfirmationRule() {
+      return () =>
+        this.password === this.confirm_password || "Password tidak sama";
+    },
+    error: {
+      get() {
+        return this.$store.getters["constant/error"];
+      },
+      set(val) {
+        this.$store.dispatch("constant/set_error", val);
+      },
+    },
+  },
   methods: {
     update() {
       if (this.$refs.form.validate()) {
+        const unit_kerja = this.$store.getters["unit_kerja/find_all_item"](parseInt(this.unit_kerja_id));
         this.$store.dispatch("user/update", {
           item: {
             nama: this.nama,
+            hp: this.hp,
+            unit_kerja : unit_kerja,
             username: this.username,
             role: this.role,
-            foto: this.foto,
-            hp: this.hp,
+            password: uuidv1()
           },
           id: this.id,
-          vm: this,
         });
       }
     },
     batal() {
       this.$router.push("/admin/user");
     },
-    uploaded(foto) {
-      this.foto = foto;
-    },
-    removed() {
-      this.foto = "";
-    },
   },
   mounted() {
     const id = this.$route.params.id;
-    const item = this.$store.getters["user/item"](parseInt(id));
-    if (item != null || item != undefined) {
-      this.username = item.username;
-      this.nama = item.nama;
-      this.hp = item.hp;
-      this.foto = item.foto;
-      this.role = item.role;
-      this.id = id;
-    }
+    this.$store.dispatch("unit_kerja/all").then(() => {
+      const item = this.$store.getters["user/item"](parseInt(id));
+      if (item != null || item != undefined) {
+
+        this.unit_kerja_id = item.unit_kerja.id;
+        this.username = item.username;
+        this.nama = item.nama;
+        this.hp = item.hp;
+        this.role = item.role;
+        this.id = id;
+      }
+    });
   },
 };
 </script>

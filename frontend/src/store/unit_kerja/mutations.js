@@ -10,8 +10,8 @@ export default {
         }
         state.items = utils.arrayUnion(state.items, items, 'id');
     },
-    ALL: (state, items) => {
-        state.items = items;
+    ALL: (state, all_items) => {
+        state.all_items = all_items;
     },
     DISPLAY_ITEMS: (state, items) => {
         if (items.length > 0) {

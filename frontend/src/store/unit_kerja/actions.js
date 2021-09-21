@@ -30,6 +30,17 @@ export default {
                 }
             })
     }),
+    all: injector.encase(['axios'], (axios) => (context) => {
+        return new Promise((resolve) => {
+            axios.get(`/admin/unit_kerja/all`)
+            .then((response) => {
+                const items = response.data;
+                context.commit('ALL', items);
+                resolve(true)
+            })
+        })
+        
+    }),
     search: injector.encase(['axios', 'toastr'], (axios, toastr) => (context, payload) => {
         let q = `limit=${payload.limit}&last_id=${payload.last_id}&search=${payload.search}&filter=${payload.filter}`;
         axios.get(`/admin/unit_kerja/search?${q}`)

@@ -157,6 +157,46 @@ func (m *Model) GetUnitKerja(lastID int64, limit int) ([]UnitKerja, error) {
 	return items, nil
 }
 
+func (m *Model) AllUnitKerja() ([]UnitKerja, error) {
+
+	items := []UnitKerja{}
+
+	sqlX := `SELECT id, nama, alamat, telepon, created_at, updated_at FROM %s ORDER BY id DESC`
+
+	sqlX = fmt.Sprintf(sqlX, tableUnitKerja)
+
+	sqlX = m.Db.Rebind(sqlX)
+
+	stmt, err := m.Db.Preparex(sqlX)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
+	}
+
+	defer stmt.Close()
+
+	rows, err := stmt.Query()
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
+	}
+
+	for rows.Next() {
+		item := UnitKerja{}
+		err = rows.Scan(&item.ID, &item.Nama, &item.Alamat, &item.Telepon, &item.CreatedAt, &item.UpdatedAt)
+		if err != nil {
+			loggers.Log.Errorln(err.Error())
+			return items, err
+		}
+
+		items = append(items, item)
+	}
+
+	return items, nil
+}
+
 func (m *Model) SearchUnitKerja(lastID int64, limit int, search string, filter string) ([]UnitKerja, error) {
 
 	items := []UnitKerja{}

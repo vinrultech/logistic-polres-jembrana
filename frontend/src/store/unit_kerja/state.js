@@ -1,6 +1,7 @@
 export default {
     items: [],
     display_items: [],
+    all_items: [],
     item:{},
     prev_show: true,
     next_show: true,

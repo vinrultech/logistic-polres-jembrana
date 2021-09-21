@@ -2,8 +2,14 @@ export default {
     items: (state) => {
         return state.display_items;
     },
+    all_items: (state) => {
+        return state.all_items;
+    },
     item: (state) => (id) => {
         return state.items.find(item => item.id === id);
+    },
+    find_all_item: (state) => (id) => {
+        return state.all_items.find(item => item.id === id);
     },
     prev_show: (state) => {
         return state.prev_show;

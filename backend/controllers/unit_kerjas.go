@@ -153,6 +153,18 @@ func (a *App) GetUnitKerja(c echo.Context) error {
 	return c.JSON(http.StatusOK, items)
 }
 
+func (a *App) AllUnitKerja(c echo.Context) error {
+
+	items, err := a.M.AllUnitKerja()
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, items)
+}
+
 func (a *App) SearchUnitKerja(c echo.Context) error {
 
 	user := c.Get("user").(*jwt.Token)

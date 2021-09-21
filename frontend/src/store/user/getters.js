@@ -1,6 +1,6 @@
 export default {
     items: (state) => {
-        return state.items;
+        return state.display_items;
     },
     item: (state) => (id) => {
         return state.items.find(item => item.id === id);
@@ -13,6 +13,15 @@ export default {
     },
     limit: (state) => {
         return state.limit;
+    },
+    last_id: (state) => {
+        return state.last_id;
+    },
+    search: (state) => {
+        return state.search;
+    },
+    filter_search: (state) => {
+        return state.filter_search;
     },
     nama: (state) => {
         return state.nama;
