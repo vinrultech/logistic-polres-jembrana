@@ -16,7 +16,7 @@
         :key="file.file_id"
         v-show="file.status !== 'delete'"
       >
-        {{ file.filename }}
+        <a href="#" @click="download(file.url)">{{ file.filename }}</a>
         <v-btn icon color="red" @click="remove(file.file_id, file.filename, file.status)">
           <v-icon>fas fa-times</v-icon>
         </v-btn>
@@ -83,6 +83,9 @@ export default {
       this.$store.dispatch("files/remove", item)
 
     },
+    download(url) {
+      window.open(`${this.host}${url}`)
+    }
   },
 };
 </script>

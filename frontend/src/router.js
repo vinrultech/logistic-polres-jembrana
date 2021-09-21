@@ -137,7 +137,7 @@ let router = new Router({
       component: () => import( /* webpackChunkName: "about" */ './views/surat_masuk/add.vue'),
     },
     {
-      path: '/admin/surat_masuk/edit/:id',
+      path: '/admin/surat_masuk/edit/:row_id',
       name: 'edit_surat_masuk',
       meta: {
         requiresAuth: true,

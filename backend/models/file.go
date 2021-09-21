@@ -55,3 +55,44 @@ func (m *Model) RemoveFile(fileID string) error {
 
 	return nil
 }
+
+func (m *Model) GetFile(rowID string, tipe string) ([]File, error) {
+
+	items := []File{}
+
+	sqlX := `SELECT file_id, row_id, tipe, url, filename, created_at, updated_at FROM %s WHERE row_id=? and tipe=?`
+
+	sqlX = fmt.Sprintf(sqlX, tableFile)
+
+	sqlX = m.Db.Rebind(sqlX)
+
+	stmt, err := m.Db.Preparex(sqlX)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
+	}
+
+	defer stmt.Close()
+
+	rows, err := stmt.Query(rowID, tipe)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
+	}
+
+	for rows.Next() {
+		item := File{}
+
+		err = rows.Scan(&item.FileID, &item.RowID, &item.Tipe, &item.Url, &item.Filename, &item.CreatedAt, &item.UpdatedAt)
+		if err != nil {
+			loggers.Log.Errorln(err.Error())
+			return items, err
+		}
+		item.Status = "edit"
+		items = append(items, item)
+	}
+
+	return items, nil
+}

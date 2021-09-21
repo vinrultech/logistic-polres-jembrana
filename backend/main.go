@@ -99,6 +99,7 @@ func main() {
 	routers.SetupRouters(e, a)
 
 	e.Static("/upload", "upload")
+	e.Static("/files", "files")
 
 	/*
 

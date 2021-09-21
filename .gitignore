@@ -11,3 +11,4 @@ backend/main.exe
 backend/info.log*
 backend/error.log*
 backend/upload
+backend/files

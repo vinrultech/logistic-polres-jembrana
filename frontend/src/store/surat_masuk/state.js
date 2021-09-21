@@ -1,41 +1,13 @@
 export default {
-    items: [
-        {
-            id: 1,
-            no_surat: "AN/IUYT/TERR",
-            dari: "kemenag jembrana",
-            tanggal_surat: "2021-09-09 23:30:58.188873",
-            perihal: "Undangan Webminar",
-            isi: "ini adalah surat dari kemenag",
-            created_at : "2021-09-09 23:30:58.188873",
-            updated_at : "2021-09-09 23:30:58.188873",
-            files : [
-                {
-                    id: 1,
-                    url: "https://storage.googleapis.com"
-                }
-            ]
-        },
-        {
-            id: 2,
-            no_surat: "AN/IUYT/TERR",
-            dari: "pemkab jembrana",
-            tanggal_surat: "2021-09-09 23:30:58.188873",
-            perihal: "Undangan Webminar",
-            isi: "ini adalah surat dari pemkab",
-            created_at : "2021-09-09 23:30:58.188873",
-            updated_at : "2021-09-09 23:30:58.188873",
-            files : [
-                {
-                    id: 2,
-                    url: "https://storage.googleapis.com"
-                }
-            ]
-        }
-    ],
+    items: [],
+    display_items: [],
     item:{},
-    prev_show: false,
-    next_show: false,
+    prev_show: true,
+    next_show: true,
+    last_id: 0,
+    search: "",
+    filter_search: "",
+    dates: [],
     limit: {
         value: 25,
         text: '25'

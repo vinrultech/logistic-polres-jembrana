@@ -37,3 +37,15 @@ CREATE TABLE "log_files" (
   "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE "log_surat_masuks" (
+  "id" serial NOT NULL,
+  "row_id" character varying(100) PRIMARY KEY,
+  "no_surat" character varying(100) NOT NULL,
+  "tanggal_surat" character varying(100) NOT NULL,
+  "dari" character varying(250) NOT NULL,
+  "perihal" character varying(250) NOT NULL,
+  "isi" text NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

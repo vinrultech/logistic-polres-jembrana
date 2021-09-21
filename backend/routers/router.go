@@ -39,4 +39,11 @@ func SetupRouters(e *echo.Echo, app *controllers.App) {
 	//files
 	admin.POST("/files/upload", app.UploadFiles)
 	admin.POST("/files/remove", app.RemoveFile)
+
+	//surat masuk
+	admin.POST("/surat_masuk/create", app.CreateSuratMasuk)
+	admin.PUT("/surat_masuk/update/:row_id", app.UpdateSuratMasuk)
+	admin.GET("/surat_masuk", app.GetSuratMasuk)
+	admin.GET("/surat_masuk/search", app.SearchSuratMasuk)
+	admin.DELETE("/surat_masuk/remove/:row_id", app.RemoveSuratMasuk)
 }
