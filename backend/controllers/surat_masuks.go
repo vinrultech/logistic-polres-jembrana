@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	uuid "github.com/satori/go.uuid"
 	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/constants"
@@ -15,10 +16,26 @@ import (
 
 func (a *App) CreateSuratMasuk(c echo.Context) error {
 
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*constants.JwtTandaTanganOnlineClaims)
+
 	var r models.SuratMasuk
 
 	if err := c.Bind(&r); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error bind surat masuk : %v", err))
+	}
+
+	var unitKerja models.UnitKerja
+
+	if claims.UnitKerjaID == 0 {
+		unitKerja = models.GetUnitKerja()
+		r.UnitKerja = unitKerja
+	} else {
+		unitKerja, err := a.M.FetchUnitKerja(int64(claims.UnitKerjaID))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error fetch unit kerja : %v", err))
+		}
+		r.UnitKerja = unitKerja
 	}
 
 	if err := c.Validate(&r); err != nil {
@@ -29,19 +46,10 @@ func (a *App) CreateSuratMasuk(c echo.Context) error {
 
 	r.RowID = u1.String()
 
-	err := a.M.CreateSuratMasuk(r)
+	err := a.M.CreateSuratMasukWithTransaction(r)
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-
-	for _, file := range r.Files {
-		file.RowID = r.RowID
-		file.Tipe = "surat_masuk"
-		err = a.M.CreateFile(file)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-		}
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error create surat masuk with transaction : %v", err))
 	}
 
 	return c.JSON(http.StatusCreated, constants.H{
@@ -51,6 +59,9 @@ func (a *App) CreateSuratMasuk(c echo.Context) error {
 
 func (a *App) GetSuratMasuk(c echo.Context) error {
 
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*constants.JwtTandaTanganOnlineClaims)
+
 	limitParam := c.QueryParam("limit")
 	lastIDParam := c.QueryParam("last_id")
 
@@ -58,14 +69,14 @@ func (a *App) GetSuratMasuk(c echo.Context) error {
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error surat masuk convert limit param to int : %v", err))
 	}
 
 	lastID, err := strconv.Atoi(lastIDParam)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error surat masuk convert last_id param to int : %v", err))
 	}
 
 	startDate := c.QueryParam("start")
@@ -74,20 +85,33 @@ func (a *App) GetSuratMasuk(c echo.Context) error {
 	var items []models.SuratMasuk
 
 	if startDate != "" && endDate != "" {
-		items, err = a.M.GetSuratMasuk(int64(lastID), limit, startDate, endDate)
+		if claims.UnitKerjaID == 0 {
+			items, err = a.M.GetSuratMasuk(int64(lastID), limit, startDate, endDate)
+		} else {
+			items, err = a.M.GetSuratMasukWithFilter(int64(lastID), limit, int64(claims.UnitKerjaID), startDate, endDate)
+		}
+
 	} else {
-		items, err = a.M.GetSuratMasuk(int64(lastID), limit)
+		if claims.UnitKerjaID == 0 {
+			items, err = a.M.GetSuratMasuk(int64(lastID), limit)
+		} else {
+			items, err = a.M.GetSuratMasukWithFilter(int64(lastID), limit, int64(claims.UnitKerjaID))
+		}
+
 	}
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error get surat masuk : %v", err))
 	}
 
 	return c.JSON(http.StatusOK, items)
 }
 
 func (a *App) SearchSuratMasuk(c echo.Context) error {
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*constants.JwtTandaTanganOnlineClaims)
 
 	limitParam := c.QueryParam("limit")
 	lastIDParam := c.QueryParam("last_id")
@@ -98,14 +122,14 @@ func (a *App) SearchSuratMasuk(c echo.Context) error {
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error surat masuk convert limit param to int : %v", err))
 	}
 
 	lastID, err := strconv.Atoi(lastIDParam)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error surat masuk convert last_id param to int : %v", err))
 	}
 
 	startDate := c.QueryParam("start")
@@ -114,14 +138,26 @@ func (a *App) SearchSuratMasuk(c echo.Context) error {
 	var items []models.SuratMasuk
 
 	if startDate != "" && endDate != "" {
-		items, err = a.M.SearchSuratMasuk(int64(lastID), limit, search, filter, startDate, endDate)
+		if claims.UnitKerjaID == 0 {
+			items, err = a.M.SearchSuratMasuk(int64(lastID), limit, search, filter, startDate, endDate)
+		} else {
+			items, err = a.M.SearchSuratMasukWithFilter(int64(lastID), limit, search, filter,
+				int64(claims.UnitKerjaID), startDate, endDate)
+		}
+
 	} else {
-		items, err = a.M.SearchSuratMasuk(int64(lastID), limit, search, filter)
+		if claims.UnitKerjaID == 0 {
+			items, err = a.M.SearchSuratMasuk(int64(lastID), limit, search, filter)
+		} else {
+			items, err = a.M.SearchSuratMasukWithFilter(int64(lastID), limit, search, filter,
+				int64(claims.UnitKerjaID))
+		}
+
 	}
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error search surat masuk : %v", err))
 	}
 
 	return c.JSON(http.StatusOK, items)
@@ -134,28 +170,17 @@ func (a *App) UpdateSuratMasuk(c echo.Context) error {
 	var r models.SuratMasuk
 
 	if err := c.Bind(&r); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error bind surat masuk : %v", err))
 	}
 
 	if err := c.Validate(&r); err != nil {
 		return err
 	}
 
-	err := a.M.UpdateSuratMasuk(r, rowID)
+	err := a.M.UpdateSuratMasukWithTransaction(r, rowID)
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-
-	for _, file := range r.Files {
-		if file.Status == "new" {
-			file.RowID = r.RowID
-			file.Tipe = "surat_masuk"
-			err = a.M.CreateFile(file)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-			}
-		}
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error update surat masuk with transaction : %v", err))
 	}
 
 	return c.JSON(http.StatusOK, constants.H{
@@ -167,29 +192,33 @@ func (a *App) RemoveSuratMasuk(c echo.Context) error {
 
 	rowID := c.Param("row_id")
 
-	row, err := a.M.FetchSuratMasuk(rowID)
-
-	err = a.M.RemoveSuratMasuk(rowID)
+	files, err := a.M.RemoveSuratMasukTransaction(rowID)
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error remove surat masuk transaction : %v", err))
 	}
 
-	for _, file := range row.Files {
-		err := a.M.RemoveFile(file.FileID)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-		}
+	for _, file := range files {
+
 		filename := fmt.Sprintf("files/%s_%s", file.FileID, file.Filename)
 
 		err = os.Remove(filename)
 
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error surat masuk,remove file : %v", err))
 		}
 	}
 
 	return c.JSON(http.StatusOK, constants.H{
 		"message": "Removed",
 	})
+}
+
+func (a *App) FetchSuratMasuk(c echo.Context) error {
+
+	rowID := c.Param("row_id")
+
+	suratMasuk, _ := a.M.FetchSuratMasuk(rowID)
+
+	return c.JSON(http.StatusOK, suratMasuk)
 }

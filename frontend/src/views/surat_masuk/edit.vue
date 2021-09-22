@@ -136,6 +136,7 @@ export default {
     dari: null,
     perihal: null,
     isi: null,
+    unit_kerja: null,
     valid: true,
     modal: false,
     row_id: null,
@@ -164,6 +165,7 @@ export default {
             dari: this.dari,
             perihal: this.perihal,
             isi: this.isi,
+            unit_kerja: this.unit_kerja,
             files: this.$store.getters["files/files"],
           },
           row_id: this.row_id,
@@ -185,6 +187,7 @@ export default {
         (this.perihal = item.perihal),
         (this.isi = item.isi),
         (this.row_id = row_id),
+        (this.unit_kerja = item.unit_kerja),
         (this.id = item.id);
       this.$store.commit("files/SET", item.files);
     }

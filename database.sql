@@ -75,3 +75,9 @@ CREATE TABLE "log_user_unit_kerja" (
   "user_id" integer NOT NULL,
   "unit_kerja_id" integer NOT NULL
 );
+
+ALTER TABLE "log_surat_masuks"
+ADD "unit_kerja_id" integer NOT NULL;
+
+ALTER TABLE "log_surat_keluars"
+ADD "unit_kerja_id" integer NOT NULL;

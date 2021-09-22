@@ -99,6 +99,7 @@
         <v-simple-table>
           <thead>
             <tr>
+              <th class="text-center">Unit Kerja</th>
               <th class="text-center">No Surat</th>
               <th class="text-center">Tanggal Surat</th>
               <th class="text-center">Dari</th>
@@ -108,6 +109,9 @@
           </thead>
           <tbody>
             <tr v-for="item in items" :key="item.id">
+              <td>
+                {{ item.unit_kerja.nama }}
+              </td>
               <td>
                 {{ item.no_surat }}
               </td>

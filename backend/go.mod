@@ -15,6 +15,7 @@ require (
 	github.com/jinzhu/now v1.1.1 // indirect
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/jung-kurt/gofpdf v1.16.2 // indirect
+	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/echo/v4 v4.5.0
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.8.0

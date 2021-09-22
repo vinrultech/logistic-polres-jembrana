@@ -18,7 +18,7 @@
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
             <v-avatar class="white" size="40">
-              <v-icon v-if="foto === '' || foto == 'null'" color="primary"
+              <v-icon v-if="foto === '' || foto == null" color="primary"
                 >fas fa-user-shield</v-icon
               >
               <img v-else :src="`${host}upload/${foto}`" />
@@ -85,13 +85,13 @@
         <v-list-item-group v-model="selectedItem" color="white">
           <template v-for="(item, i) in items">
             <v-row
-              v-if="item.heading"
+              v-if="item.heading && get_role(item.role)"
               :key="item.heading"
               align="center"
               v-show="!mini"
             >
               <v-col cols="6">
-                <v-subheader class="white--text" v-if="item.heading">{{
+                <v-subheader class="white--text" v-if="item.heading && get_role(item.role)">{{
                   item.heading
                 }}</v-subheader>
               </v-col>
@@ -135,7 +135,7 @@
                 </v-list-item-content>
               </v-list-item>
             </v-list-group>
-            <div v-else :key="item.text">
+            <div v-else-if="get_role(item.role)" :key="item.text">
               <v-list-item v-if="!mini" @click="to(item.href)" link>
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 <v-list-item-icon>
@@ -199,68 +199,78 @@ export default {
     drawer: null,
     mini: false,
     logo: logoPng,
+    role: utils.role(),
     items: [
-      { icon: "fas fa-home", text: "Dashboard", href: "/admin", size: 20 },
-      { heading: "Master Data" },
+      { icon: "fas fa-home", text: "Dashboard", href: "/admin", size: 20, role : ["superuser", "unit_kerja"] },
+      { heading: "Master Data", role : ["superuser"]},
       {
         icon: "fas fa-cookie-bite",
         text: "Kategori",
         href: "/admin/kategori",
         size: 20,
+        role : ["superuser"]
       },
       {
         icon: "fas fa-building",
         text: "Unit Kerja",
         href: "/admin/unit_kerja",
         size: 20,
+        role : ["superuser"]
       },
-      { heading: "Surat" },
+      { heading: "Surat" , role : ["superuser", "unit_kerja"]},
       {
         icon: "fas fa-envelope",
         text: "Surat Masuk",
         href: "/admin/surat_masuk",
         size: 20,
+        role : ["superuser", "unit_kerja"]
       },
       {
         icon: "fas fa-envelope-open-text",
         text: "Surat Keluar",
         href: "/admin/surat_keluar",
         size: 20,
+        role : ["superuser", "unit_kerja"]
       },
       {
         icon: "fas fa-mail-bulk",
         text: "Juknis",
         href: "/admin/juknis",
         size: 17,
+        role : ["superuser", "unit_kerja"]
       },
-      { heading: "Inventory" },
+      { heading: "Inventory", role : ["superuser", "unit_kerja"] },
       {
         icon: "fas fa-shopping-basket",
         text: "Barang",
         href: "/admin/inventory",
         size: 16,
+        role : ["superuser", "unit_kerja"]
       },
       {
         icon: "fas fa-warehouse",
         text: "Asset Tetap",
         href: "/admin/asset_tetap",
         size: 16,
+        role : ["superuser", "unit_kerja"]
       },
-      { heading: "Tranksasi" },
+      { heading: "Tranksasi", role : ["superuser", "unit_kerja"] },
       {
         icon: "fas fa-database",
         text: "Inventory Masuk",
         href: "/admin/inventory_masuk",
         size: 16,
+        role : ["superuser", "unit_kerja"]
       },
       {
         icon: "fas fa-table",
         text: "Inventory Keluar",
         href: "/admin/inventory_keluar",
         size: 16,
+        role : ["superuser", "unit_kerja"]
       },
       { divider: true },
-      { icon: "fas fa-users", text: "User", href: "/admin/user", size: 16 },
+      { icon: "fas fa-users", text: "User", href: "/admin/user", size: 16 , role : ["superuser"]},
     ],
     host: vm.$host,
   }),
@@ -292,6 +302,15 @@ export default {
         }
       }
     },
+    get_role(role) {
+      for (let i = 0; i < role.length; i++) {
+        if (role[i] === this.role) {
+          return true;
+        }
+      }
+
+      return false;
+    }
   },
   mounted() {
     this.$store.dispatch("user/nama");

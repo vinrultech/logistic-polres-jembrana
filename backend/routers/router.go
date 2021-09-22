@@ -12,6 +12,8 @@ func SetupRouters(e *echo.Echo, app *controllers.App) {
 	api := e.Group("/api")
 	api.GET("/test", app.TestInsertRow)
 
+	//api.GET("/fetch/:row_id", app.FetchSuratMasuk)
+
 	//
 	api.POST("/user/login", app.Login)
 

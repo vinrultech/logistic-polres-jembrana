@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -25,7 +26,7 @@ func (a *App) CreateUnitKerja(c echo.Context) error {
 	var r models.UnitKerja
 
 	if err := c.Bind(&r); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error bind unit kerja : %v", err))
 	}
 
 	if err := c.Validate(&r); err != nil {
@@ -35,7 +36,7 @@ func (a *App) CreateUnitKerja(c echo.Context) error {
 	err := a.M.CreateUnitKerja(r)
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error create unit kerja : %v", err))
 	}
 
 	return c.JSON(http.StatusCreated, constants.H{
@@ -60,13 +61,13 @@ func (a *App) UpdateUnitKerja(c echo.Context) error {
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error unit kerja comvert id to int : %v", err))
 	}
 
 	var r models.UnitKerja
 
 	if err := c.Bind(&r); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error bind unit kerja : %v", err))
 	}
 
 	if err := c.Validate(&r); err != nil {
@@ -76,7 +77,7 @@ func (a *App) UpdateUnitKerja(c echo.Context) error {
 	err = a.M.UpdateUnitKerja(r, int64(id))
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error create unit kerja : %v", err))
 	}
 
 	return c.JSON(http.StatusOK, constants.H{
@@ -101,13 +102,13 @@ func (a *App) RemoveUnitKerja(c echo.Context) error {
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error unit kerja convert id to int : %v", err))
 	}
 
 	err = a.M.RemoveUnitKerja(int64(id))
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error remove unit kerja : %v", err))
 	}
 
 	return c.JSON(http.StatusOK, constants.H{
@@ -133,21 +134,21 @@ func (a *App) GetUnitKerja(c echo.Context) error {
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error unit kerja convert limit param to int : %v", err))
 	}
 
 	lastID, err := strconv.Atoi(lastIDParam)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error unit kerja convert last_id param to int : %v", err))
 	}
 
 	items, err := a.M.GetUnitKerja(int64(lastID), limit)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error get unit kerja : %v", err))
 	}
 
 	return c.JSON(http.StatusOK, items)
@@ -159,7 +160,7 @@ func (a *App) AllUnitKerja(c echo.Context) error {
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error all unit kerja : %v", err))
 	}
 
 	return c.JSON(http.StatusOK, items)
@@ -185,21 +186,21 @@ func (a *App) SearchUnitKerja(c echo.Context) error {
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error unit kerja convert limit param to int : %v", err))
 	}
 
 	lastID, err := strconv.Atoi(lastIDParam)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error unit kerja convert last_id param to int : %v", err))
 	}
 
 	items, err := a.M.SearchUnitKerja(int64(lastID), limit, search, filter)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error search unit kerja : %v", err))
 	}
 
 	return c.JSON(http.StatusOK, items)

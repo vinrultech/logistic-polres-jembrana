@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/jmoiron/sqlx"
+	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/constants"
 	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/db"
 	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/loggers"
 	"gopkg.in/guregu/null.v4"
@@ -118,6 +119,19 @@ func (m *Model) GetID(sqlX string, search string, filter string) (int64, error) 
 		return id.Int64, nil
 	} else {
 		return id.ValueOrZero(), nil
+	}
+
+}
+
+func GetUnitKerja() UnitKerja {
+	updatedAt := constants.GetDatetimeNow()
+	return UnitKerja{
+		ID:        0,
+		Nama:      "Superuser Logistik Polres",
+		Alamat:    "Polres Jembrana",
+		Telepon:   "-",
+		CreatedAt: updatedAt,
+		UpdatedAt: updatedAt,
 	}
 
 }

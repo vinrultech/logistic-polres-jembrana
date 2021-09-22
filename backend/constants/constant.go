@@ -19,9 +19,10 @@ const (
 )
 
 type JwtTandaTanganOnlineClaims struct {
-	Username string `json:"name"`
-	Role     string `json:"role"`
-	ID       int    `json:"id"`
+	Username    string `json:"name"`
+	Role        string `json:"role"`
+	ID          int    `json:"id"`
+	UnitKerjaID int    `json:"unit_kerja_id"`
 	jwt.StandardClaims
 }
 

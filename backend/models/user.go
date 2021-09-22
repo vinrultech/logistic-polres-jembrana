@@ -193,6 +193,63 @@ func (m *Model) CreateUserUnitKerja(userID int64, unitKerjaID int64) error {
 	return nil
 }
 
+func (m *Model) CreateUserWithUnitKerja(r User) error {
+
+	password, _ := constants.HashPassword(r.Password)
+
+	tx, err := m.Db.Begin()
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return err
+	}
+
+	sqlX := `INSERT INTO %s (nama, username, password, role, hp, foto) 
+				VALUES (?, ?, ?, ?, ?, ?) RETURNING id`
+
+	sqlX = fmt.Sprintf(sqlX, db.TableUsers)
+	sqlX = m.Db.Rebind(sqlX)
+
+	stmt, err := tx.Prepare(sqlX)
+
+	if err != nil {
+
+		return err
+	}
+
+	defer stmt.Close()
+
+	var lastInsertedID int
+
+	err = stmt.QueryRow(r.Nama, r.Username, password, r.Role, r.Hp, r.Foto).Scan(&lastInsertedID)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return err
+	}
+
+	sqlUserUnitKerja := `INSERT INTO %s (user_id, unit_kerja_id) 
+				VALUES (?, ?)`
+	sqlUserUnitKerja = fmt.Sprintf(sqlUserUnitKerja, "log_user_unit_kerja")
+	sqlUserUnitKerja = m.Db.Rebind(sqlUserUnitKerja)
+
+	_, err = tx.Exec(sqlUserUnitKerja, lastInsertedID, r.UnitKerja.ID)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return err
+	}
+
+	tx.Commit()
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return err
+	}
+
+	return nil
+}
+
 func (m *Model) RemoveUser(id int64) error {
 
 	tx, err := m.Db.Begin()
@@ -379,15 +436,7 @@ func (m *Model) GetsUser(lastID int64, limit int) ([]User, error) {
 		unitKerja, err := m.FetchUserUnitKerja(int64(item.ID))
 		if err == sql.ErrNoRows {
 			if item.Role == "superuser" {
-				updatedAt := constants.GetDatetimeNow()
-				item.UnitKerja = UnitKerja{
-					ID:        0,
-					Nama:      "Superuser Logistik Polres",
-					Alamat:    "Polres Jembrana",
-					Telepon:   "-",
-					CreatedAt: updatedAt,
-					UpdatedAt: updatedAt,
-				}
+				item.UnitKerja = GetUnitKerja()
 			}
 		} else {
 			item.UnitKerja = unitKerja
@@ -452,15 +501,7 @@ func (m *Model) SearchUser(lastID int64, limit int, search string, filter string
 		unitKerja, err := m.FetchUserUnitKerja(int64(item.ID))
 		if err == sql.ErrNoRows {
 			if item.Role == "superuser" {
-				updatedAt := constants.GetDatetimeNow()
-				item.UnitKerja = UnitKerja{
-					ID:        0,
-					Nama:      "Superuser Logistik Polres",
-					Alamat:    "Polres Jembrana",
-					Telepon:   "-",
-					CreatedAt: updatedAt,
-					UpdatedAt: updatedAt,
-				}
+				item.UnitKerja = GetUnitKerja()
 			}
 		} else {
 			item.UnitKerja = unitKerja

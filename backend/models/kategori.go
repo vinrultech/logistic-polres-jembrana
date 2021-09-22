@@ -3,8 +3,10 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/constants"
+	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/db"
 	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/loggers"
 	"gopkg.in/guregu/null.v4"
 )
@@ -19,11 +21,56 @@ type Kategori struct {
 	UpdatedAt null.Time `json:"updated_at"`
 }
 
+func getSelectKategori() []string {
+	return []string{"id", "kode", "nama", "created_at", "updated_at"}
+}
+
+func getRowKategori(values []interface{}, m *Model) (Kategori, error) {
+	item := Kategori{}
+	item.ID = values[0].(int64)
+	item.Kode = values[1].(string)
+	item.Nama = values[2].(string)
+	item.CreatedAt = null.TimeFrom(values[3].(time.Time))
+	item.UpdatedAt = null.TimeFrom(values[4].(time.Time))
+	return item, nil
+}
+
+func getRowsKategori(rows *sql.Rows, m *Model) ([]Kategori, error) {
+
+	items := []Kategori{}
+
+	count := len(getSelectKategori())
+
+	values := make([]interface{}, count)
+	valuesPtrs := make([]interface{}, count)
+
+	for i := 0; i < count; i++ {
+		valuesPtrs[i] = &values[i]
+	}
+
+	for rows.Next() {
+
+		err := rows.Scan(valuesPtrs...)
+		if err != nil {
+			loggers.Log.Errorln(err.Error())
+			return items, err
+		}
+
+		item, err := getRowKategori(values, m)
+
+		if err != nil {
+			loggers.Log.Errorln(err.Error())
+			return items, err
+		}
+
+		items = append(items, item)
+	}
+	return items, nil
+}
+
 func (m *Model) CreateKategori(r Kategori) error {
 
-	sqlX := `INSERT INTO %s (kode, nama) VALUES (?, ?)`
-
-	sqlX = fmt.Sprintf(sqlX, tableKategori)
+	sqlX := db.Insert(tableKategori, "kode", "nama")
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -41,9 +88,7 @@ func (m *Model) UpdateKategori(r Kategori, id int64) error {
 
 	updatedAt := constants.GetDatetimeNow()
 
-	sqlX := `UPDATE %s SET kode=?, nama=?, updated_at=? WHERE id=?`
-
-	sqlX = fmt.Sprintf(sqlX, tableKategori)
+	sqlX := db.Update(tableKategori, "id", "kode", "nama", "updated_at")
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -59,9 +104,7 @@ func (m *Model) UpdateKategori(r Kategori, id int64) error {
 
 func (m *Model) RemoveKategori(id int64) error {
 
-	sqlX := `DELETE FROM %s WHERE id=?`
-
-	sqlX = fmt.Sprintf(sqlX, tableKategori)
+	sqlX := db.Delete(tableKategori, "id")
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -79,9 +122,7 @@ func (m *Model) FetchKategori(id int64) (Kategori, error) {
 
 	item := Kategori{}
 
-	sqlX := `SELECT id, kode, nama, created_at, updated_at FROM %s WHERE id=?`
-
-	sqlX = fmt.Sprintf(sqlX, tableKategori)
+	sqlX := db.Fetch(tableKategori, "id", getSelectKategori())
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -96,7 +137,23 @@ func (m *Model) FetchKategori(id int64) (Kategori, error) {
 
 	row := stmt.QueryRow(id)
 
-	err = row.Scan(&item.ID, &item.Kode, &item.Nama, &item.CreatedAt, &item.UpdatedAt)
+	count := len(getSelectKategori())
+
+	values := make([]interface{}, count)
+	valuesPtrs := make([]interface{}, count)
+
+	for i := 0; i < count; i++ {
+		valuesPtrs[i] = &values[i]
+	}
+
+	err = row.Scan(valuesPtrs...)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return item, err
+	}
+
+	item, err = getRowKategori(values, m)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
@@ -110,13 +167,11 @@ func (m *Model) GetKategori(lastID int64, limit int) ([]Kategori, error) {
 
 	items := []Kategori{}
 
-	sqlX := `SELECT id, kode, nama, created_at, updated_at FROM %s WHERE id<? ORDER BY id DESC LIMIT ?`
+	sqlX := db.QueryPaging(tableKategori, "id", false, getSelectKategori())
 
 	if lastID == 0 {
-		sqlX = `SELECT id, kode, nama, created_at, updated_at FROM %s ORDER BY id DESC LIMIT ?`
+		sqlX = db.QueryPaging(tableKategori, "id", true, getSelectKategori())
 	}
-
-	sqlX = fmt.Sprintf(sqlX, tableKategori)
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -142,15 +197,11 @@ func (m *Model) GetKategori(lastID int64, limit int) ([]Kategori, error) {
 		return items, err
 	}
 
-	for rows.Next() {
-		item := Kategori{}
-		err = rows.Scan(&item.ID, &item.Kode, &item.Nama, &item.CreatedAt, &item.UpdatedAt)
-		if err != nil {
-			loggers.Log.Errorln(err.Error())
-			return items, err
-		}
+	items, err = getRowsKategori(rows, m)
 
-		items = append(items, item)
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
 	}
 
 	return items, nil
@@ -160,17 +211,11 @@ func (m *Model) SearchKategori(lastID int64, limit int, search string, filter st
 
 	items := []Kategori{}
 
-	query := `ILIKE '%' || ? || '%'`
-
-	sqlX := `SELECT id, kode, nama, created_at, updated_at FROM %s WHERE id<? AND %s %s ORDER BY id DESC LIMIT ?`
+	sqlX := db.QueryPagingSearch(tableKategori, "id", false, filter, getSelectKategori())
 
 	if lastID == 0 {
-		sqlX = `SELECT id, kode, nama, created_at, updated_at FROM %s WHERE %s %s ORDER BY id DESC LIMIT ?`
+		sqlX = db.QueryPagingSearch(tableKategori, "id", true, filter, getSelectKategori())
 	}
-
-	sqlX = fmt.Sprintf(sqlX, tableKategori, filter, query)
-
-	fmt.Println(sqlX)
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -196,15 +241,11 @@ func (m *Model) SearchKategori(lastID int64, limit int, search string, filter st
 		return items, err
 	}
 
-	for rows.Next() {
-		item := Kategori{}
-		err = rows.Scan(&item.ID, &item.Kode, &item.Nama, &item.CreatedAt, &item.UpdatedAt)
-		if err != nil {
-			loggers.Log.Errorln(err.Error())
-			return items, err
-		}
+	items, err = getRowsKategori(rows, m)
 
-		items = append(items, item)
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
 	}
 
 	return items, nil

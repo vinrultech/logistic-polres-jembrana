@@ -26,7 +26,7 @@ func (a *App) CreateKategori(c echo.Context) error {
 	var r models.Kategori
 
 	if err := c.Bind(&r); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error bind kategori : %v", err))
 	}
 
 	if err := c.Validate(&r); err != nil {
@@ -40,7 +40,7 @@ func (a *App) CreateKategori(c echo.Context) error {
 	err := a.M.CreateKategori(r)
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error create kategori : %v", err))
 	}
 
 	return c.JSON(http.StatusCreated, constants.H{
@@ -65,13 +65,13 @@ func (a *App) UpdateKategori(c echo.Context) error {
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error convert id param to int : %v", err))
 	}
 
 	var r models.Kategori
 
 	if err := c.Bind(&r); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error bind kategori : %v", err))
 	}
 
 	if err := c.Validate(&r); err != nil {
@@ -81,7 +81,7 @@ func (a *App) UpdateKategori(c echo.Context) error {
 	item, err := a.M.FetchKategori(int64(id))
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error fetch kategori : %v", err))
 	}
 
 	if r.Kode != item.Kode {
@@ -93,7 +93,7 @@ func (a *App) UpdateKategori(c echo.Context) error {
 	err = a.M.UpdateKategori(r, int64(id))
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error update kategori : %v", err))
 	}
 
 	return c.JSON(http.StatusOK, constants.H{
@@ -118,13 +118,13 @@ func (a *App) RemoveKategori(c echo.Context) error {
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error convert id param to int : %v", err))
 	}
 
 	err = a.M.RemoveKategori(int64(id))
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error remove kategori : %v", err))
 	}
 
 	return c.JSON(http.StatusOK, constants.H{
@@ -150,21 +150,21 @@ func (a *App) GetKategori(c echo.Context) error {
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error kategori convert limit param to int  : %v", err))
 	}
 
 	lastID, err := strconv.Atoi(lastIDParam)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error kategori convert last_id param : %v", err))
 	}
 
 	items, err := a.M.GetKategori(int64(lastID), limit)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error get kategori : %v", err))
 	}
 
 	return c.JSON(http.StatusOK, items)
@@ -190,21 +190,21 @@ func (a *App) SearchKategori(c echo.Context) error {
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error kategori convert limit param to int : %v", err))
 	}
 
 	lastID, err := strconv.Atoi(lastIDParam)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error kategori convert last_id param to int : %v", err))
 	}
 
 	items, err := a.M.SearchKategori(int64(lastID), limit, search, filter)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error search kategori : %v", err))
 	}
 
 	return c.JSON(http.StatusOK, items)

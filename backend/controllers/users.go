@@ -42,10 +42,26 @@ func (a *App) Login(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Password salah")
 	}
 
+	var unitKerjaID int
+
+	if user.Role == "superuser" {
+		unitKerjaID = 0
+	} else {
+		unitKerja, err := a.M.FetchUserUnitKerja(int64(user.ID))
+
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error fetch user unit kerja : %v", err))
+
+		}
+
+		unitKerjaID = int(unitKerja.ID)
+	}
+
 	claims := &constants.JwtTandaTanganOnlineClaims{
 		user.Username,
 		user.Role,
 		user.ID,
+		unitKerjaID,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
 		},
@@ -121,7 +137,7 @@ func (a *App) ResetPassword(c echo.Context) error {
 	}
 
 	if err := c.Bind(&u); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error bind user : %v", err))
 	}
 
 	if err := c.Validate(&u); err != nil {
@@ -163,7 +179,7 @@ func (a *App) CreateUser(c echo.Context) error {
 	var r models.User
 
 	if err := c.Bind(&r); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error bind user : %v", err))
 	}
 
 	if err := c.Validate(&r); err != nil {
@@ -174,17 +190,26 @@ func (a *App) CreateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Username sudah ada, cari yang lain")
 	}
 
-	lastInsertedID, err := a.M.CreateUser(r)
+	err := a.M.CreateUserWithUnitKerja(r)
 
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error create user : %v", err))
 	}
 
-	err = a.M.CreateUserUnitKerja(lastInsertedID, r.UnitKerja.ID)
+	/*
 
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
+		lastInsertedID, err := a.M.CreateUser(r)
+
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error create user : %v", err))
+		}
+
+		err = a.M.CreateUserUnitKerja(lastInsertedID, r.UnitKerja.ID)
+
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error bind user : %v", err))
+		}
+	*/
 
 	return c.JSON(http.StatusCreated, constants.H{
 		"message": "Created",

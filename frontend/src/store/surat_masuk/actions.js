@@ -30,7 +30,9 @@ export default {
                         context.commit('PREV', true);
                     }
                 } else {
-                    toastr.s("No more data next")
+                    if (payload.last_id !== 0) {
+                        toastr.s("No more data next")
+                    }
                 }
             })
     }),
@@ -55,7 +57,9 @@ export default {
                         context.commit('PREV', true);
                     }
                 } else {
-                    toastr.s("No more data next")
+                    if (payload.last_id !== 0) {
+                        toastr.s("No more data next")
+                    }
                 }
             })
     }),

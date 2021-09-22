@@ -3,8 +3,10 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/constants"
+	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/db"
 	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/loggers"
 	"gopkg.in/guregu/null.v4"
 )
@@ -20,11 +22,57 @@ type UnitKerja struct {
 	UpdatedAt null.Time `json:"updated_at"`
 }
 
+func getSelectUnitKerja() []string {
+	return []string{"id", "nama", "alamat", "telepon", "created_at", "updated_at"}
+}
+
+func getRowUnitKerja(values []interface{}, m *Model) (UnitKerja, error) {
+	item := UnitKerja{}
+	item.ID = values[0].(int64)
+	item.Nama = values[1].(string)
+	item.Alamat = values[2].(string)
+	item.Telepon = values[3].(string)
+	item.CreatedAt = null.TimeFrom(values[4].(time.Time))
+	item.UpdatedAt = null.TimeFrom(values[5].(time.Time))
+	return item, nil
+}
+
+func getRowsUnitKerja(rows *sql.Rows, m *Model) ([]UnitKerja, error) {
+
+	items := []UnitKerja{}
+
+	count := len(getSelectUnitKerja())
+
+	values := make([]interface{}, count)
+	valuesPtrs := make([]interface{}, count)
+
+	for i := 0; i < count; i++ {
+		valuesPtrs[i] = &values[i]
+	}
+
+	for rows.Next() {
+
+		err := rows.Scan(valuesPtrs...)
+		if err != nil {
+			loggers.Log.Errorln(err.Error())
+			return items, err
+		}
+
+		item, err := getRowUnitKerja(values, m)
+
+		if err != nil {
+			loggers.Log.Errorln(err.Error())
+			return items, err
+		}
+
+		items = append(items, item)
+	}
+	return items, nil
+}
+
 func (m *Model) CreateUnitKerja(r UnitKerja) error {
 
-	sqlX := `INSERT INTO %s (nama, alamat, telepon) VALUES (?, ?, ?)`
-
-	sqlX = fmt.Sprintf(sqlX, tableUnitKerja)
+	sqlX := db.Insert(tableUnitKerja, "nama", "alamat", "telepon")
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -42,9 +90,7 @@ func (m *Model) UpdateUnitKerja(r UnitKerja, id int64) error {
 
 	updatedAt := constants.GetDatetimeNow()
 
-	sqlX := `UPDATE %s SET nama=?, alamat=?, telepon=?, updated_at=? WHERE id=?`
-
-	sqlX = fmt.Sprintf(sqlX, tableUnitKerja)
+	sqlX := db.Update(tableUnitKerja, "id", "nama", "alamat", "telepon", "updated_at")
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -60,9 +106,7 @@ func (m *Model) UpdateUnitKerja(r UnitKerja, id int64) error {
 
 func (m *Model) RemoveUnitKerja(id int64) error {
 
-	sqlX := `DELETE FROM %s WHERE id=?`
-
-	sqlX = fmt.Sprintf(sqlX, tableUnitKerja)
+	sqlX := db.Delete(tableUnitKerja, "id")
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -80,9 +124,7 @@ func (m *Model) FetchUnitKerja(id int64) (UnitKerja, error) {
 
 	item := UnitKerja{}
 
-	sqlX := `SELECT id, nama, alamat, telepon, created_at, updated_at FROM %s WHERE id=?`
-
-	sqlX = fmt.Sprintf(sqlX, tableUnitKerja)
+	sqlX := db.Fetch(tableUnitKerja, "id", getSelectUnitKerja())
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -97,7 +139,23 @@ func (m *Model) FetchUnitKerja(id int64) (UnitKerja, error) {
 
 	row := stmt.QueryRow(id)
 
-	err = row.Scan(&item.ID, &item.Nama, &item.Alamat, &item.Telepon, &item.CreatedAt, &item.UpdatedAt)
+	count := len(getSelectUnitKerja())
+
+	values := make([]interface{}, count)
+	valuesPtrs := make([]interface{}, count)
+
+	for i := 0; i < count; i++ {
+		valuesPtrs[i] = &values[i]
+	}
+
+	err = row.Scan(valuesPtrs...)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return item, err
+	}
+
+	item, err = getRowUnitKerja(values, m)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
@@ -111,13 +169,11 @@ func (m *Model) GetUnitKerja(lastID int64, limit int) ([]UnitKerja, error) {
 
 	items := []UnitKerja{}
 
-	sqlX := `SELECT id, nama, alamat, telepon, created_at, updated_at FROM %s WHERE id<? ORDER BY id DESC LIMIT ?`
+	sqlX := db.QueryPaging(tableUnitKerja, "id", false, getSelectUnitKerja())
 
 	if lastID == 0 {
-		sqlX = `SELECT id, nama, alamat, telepon, created_at, updated_at FROM %s ORDER BY id DESC LIMIT ?`
+		sqlX = db.QueryPaging(tableUnitKerja, "id", true, getSelectUnitKerja())
 	}
-
-	sqlX = fmt.Sprintf(sqlX, tableUnitKerja)
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -143,15 +199,11 @@ func (m *Model) GetUnitKerja(lastID int64, limit int) ([]UnitKerja, error) {
 		return items, err
 	}
 
-	for rows.Next() {
-		item := UnitKerja{}
-		err = rows.Scan(&item.ID, &item.Nama, &item.Alamat, &item.Telepon, &item.CreatedAt, &item.UpdatedAt)
-		if err != nil {
-			loggers.Log.Errorln(err.Error())
-			return items, err
-		}
+	items, err = getRowsUnitKerja(rows, m)
 
-		items = append(items, item)
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
 	}
 
 	return items, nil
@@ -161,9 +213,7 @@ func (m *Model) AllUnitKerja() ([]UnitKerja, error) {
 
 	items := []UnitKerja{}
 
-	sqlX := `SELECT id, nama, alamat, telepon, created_at, updated_at FROM %s ORDER BY id DESC`
-
-	sqlX = fmt.Sprintf(sqlX, tableUnitKerja)
+	sqlX := db.QueryAll(tableUnitKerja, getSelectUnitKerja())
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -183,15 +233,11 @@ func (m *Model) AllUnitKerja() ([]UnitKerja, error) {
 		return items, err
 	}
 
-	for rows.Next() {
-		item := UnitKerja{}
-		err = rows.Scan(&item.ID, &item.Nama, &item.Alamat, &item.Telepon, &item.CreatedAt, &item.UpdatedAt)
-		if err != nil {
-			loggers.Log.Errorln(err.Error())
-			return items, err
-		}
+	items, err = getRowsUnitKerja(rows, m)
 
-		items = append(items, item)
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
 	}
 
 	return items, nil
@@ -201,15 +247,11 @@ func (m *Model) SearchUnitKerja(lastID int64, limit int, search string, filter s
 
 	items := []UnitKerja{}
 
-	query := `ILIKE '%' || ? || '%'`
-
-	sqlX := `SELECT id, nama, alamat, telepon, created_at, updated_at FROM %s WHERE id<? AND %s %s ORDER BY id DESC LIMIT ?`
+	sqlX := db.QueryPagingSearch(tableUnitKerja, "id", false, filter, getSelectUnitKerja())
 
 	if lastID == 0 {
-		sqlX = `SELECT id, nama, alamat, telepon, created_at, updated_at FROM %s WHERE %s %s ORDER BY id DESC LIMIT ?`
+		sqlX = db.QueryPagingSearch(tableUnitKerja, "id", true, filter, getSelectUnitKerja())
 	}
-
-	sqlX = fmt.Sprintf(sqlX, tableUnitKerja, filter, query)
 
 	fmt.Println(sqlX)
 
@@ -237,15 +279,11 @@ func (m *Model) SearchUnitKerja(lastID int64, limit int, search string, filter s
 		return items, err
 	}
 
-	for rows.Next() {
-		item := UnitKerja{}
-		err = rows.Scan(&item.ID, &item.Nama, &item.Alamat, &item.Telepon, &item.CreatedAt, &item.UpdatedAt)
-		if err != nil {
-			loggers.Log.Errorln(err.Error())
-			return items, err
-		}
+	items, err = getRowsUnitKerja(rows, m)
 
-		items = append(items, item)
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
 	}
 
 	return items, nil
