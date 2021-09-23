@@ -1,10 +1,11 @@
-posgres
+postgres
 
 frontend/node_modules
 frontend/dist
 frontend/yarn-error.log*
 frontend/yarn-debug.log*
 frontend/npm-debug.log*
+frontend/package-lock.json
 
 backend/main
 backend/main.exe
