@@ -10,13 +10,33 @@ export const KATEGORI = (disabled) => {
     }
 };
 
+export const UNIT_KERJA = (disabled) => {
+    return {
+        text: "Unit Kerja",
+        disabled: disabled,
+        href: "/admin/unit_kerja",
+        icon: "fas fa-building",
+        menu: 2,
+    }
+};
+
+export const METRIC = (disabled) => {
+    return {
+        text: "Satuan Metrik",
+        disabled: disabled,
+        href: "/admin/satuan_metrik",
+        icon: "fas fa-sort-numeric-down",
+        menu: 3,
+    }
+};
+
 export const SURAT_MASUK = (disabled) => {
     return {
         text: "Surat Masuk",
         disabled: disabled,
         href: "/admin/surat_masuk",
         icon: "fas fa-envelope",
-        menu: 2,
+        menu: 4,
     }
 };
 
@@ -26,7 +46,7 @@ export const SURAT_KELUAR = (disabled) => {
         disabled: disabled,
         href: "/admin/surat_keluar",
         icon: "fas fa-envelope-open-text",
-        menu: 3,
+        menu: 5,
     }
 };
 
@@ -36,7 +56,7 @@ export const JUKNIS = (disabled) => {
         disabled: disabled,
         href: "/admin/juknis",
         icon: "fas fa-mail-bulk",
-        menu: 4,
+        menu: 6,
     }
 };
 
@@ -46,7 +66,7 @@ export const BARANG = (disabled) => {
         disabled: disabled,
         href: "/admin/inventory",
         icon: "fas fa-shopping-basket",
-        menu: 5,
+        menu: 7,
     }
 };
 
@@ -56,7 +76,7 @@ export const ASSET_TETAP = (disabled) => {
         disabled: disabled,
         href: "/admin/asset_tetap",
         icon: "fas fa-warehouse",
-        menu: 6,
+        menu: 8,
     }
 };
 
@@ -66,7 +86,7 @@ export const INVENTORY_MASUK = (disabled) => {
         disabled: disabled,
         href: "/admin/inventory_masuk",
         icon: "fas fa-database",
-        menu: 7,
+        menu: 9,
     }
 };
 
@@ -76,7 +96,7 @@ export const INVENTORY_KELUAR = (disabled) => {
         disabled: disabled,
         href: "/admin/inventory_keluar",
         icon: "fas fa-table",
-        menu: 8,
+        menu: 10,
     }
 };
 
@@ -86,19 +106,11 @@ export const USER = (disabled) => {
         disabled: disabled,
         href: "/admin/user",
         icon: "fas fa-users",
-        menu: 9,
+        menu: 11,
     }
 };
 
-export const UNIT_KERJA = (disabled) => {
-    return {
-        text: "Unit Kerja",
-        disabled: disabled,
-        href: "/admin/unit_kerja",
-        icon: "fas fa-users",
-        menu: 10,
-    }
-};
+
 
 export const DASHBOARD = {
     text: "Dashboard",

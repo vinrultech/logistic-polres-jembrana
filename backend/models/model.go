@@ -135,3 +135,14 @@ func GetUnitKerja() UnitKerja {
 	}
 
 }
+
+func getValuePtr(count int) ([]interface{}, []interface{}) {
+	values := make([]interface{}, count)
+	valuesPtrs := make([]interface{}, count)
+
+	for i := 0; i < count; i++ {
+		valuesPtrs[i] = &values[i]
+	}
+
+	return values, valuesPtrs
+}

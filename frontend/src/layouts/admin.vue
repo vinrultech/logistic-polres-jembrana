@@ -217,6 +217,13 @@ export default {
         size: 20,
         role : ["superuser"]
       },
+      {
+        icon: "fas fa-sort-numeric-down",
+        text: "Satuan Metrik",
+        href: "/admin/satuan_metrik",
+        size: 20,
+        role : ["superuser"]
+      },
       { heading: "Surat" , role : ["superuser", "unit_kerja"]},
       {
         icon: "fas fa-envelope",
@@ -321,24 +328,26 @@ export default {
     const routes = path.split("/");
     if (routes[2] === "kategori") {
       this.$store.dispatch("constant/menu", 1);
-    } else if (routes[2] === "surat_masuk") {
-      this.$store.dispatch("constant/menu", 2);
-    } else if (routes[2] === "surat_keluar") {
-      this.$store.dispatch("constant/menu", 3);
-    } else if (routes[2] === "juknis") {
-      this.$store.dispatch("constant/menu", 4);
-    } else if (routes[2] === "inventory") {
-      this.$store.dispatch("constant/menu", 5);
-    } else if (routes[2] === "asset_tetap") {
-      this.$store.dispatch("constant/menu", 6);
-    } else if (routes[2] === "inventory_masuk") {
-      this.$store.dispatch("constant/menu", 7);
-    } else if (routes[2] === "inventory_keluar") {
-      this.$store.dispatch("constant/menu", 8);
-    } else if (routes[2] === "user") {
-      this.$store.dispatch("constant/menu", 9);
     } else if (routes[2] === "unit_kerja") {
+      this.$store.dispatch("constant/menu", 2);
+    } else if (routes[2] === "unit_kerja") {
+      this.$store.dispatch("constant/menu", 3);
+    } else if (routes[2] === "surat_masuk") {
+      this.$store.dispatch("constant/menu", 4);
+    } else if (routes[2] === "surat_keluar") {
+      this.$store.dispatch("constant/menu", 5);
+    } else if (routes[2] === "juknis") {
+      this.$store.dispatch("constant/menu", 6);
+    } else if (routes[2] === "inventory") {
+      this.$store.dispatch("constant/menu", 7);
+    } else if (routes[2] === "asset_tetap") {
+      this.$store.dispatch("constant/menu", 8);
+    } else if (routes[2] === "inventory_masuk") {
+      this.$store.dispatch("constant/menu", 9);
+    } else if (routes[2] === "inventory_keluar") {
       this.$store.dispatch("constant/menu", 10);
+    } else if (routes[2] === "user") {
+      this.$store.dispatch("constant/menu", 11);
     } else {
       this.$store.dispatch("constant/menu", 0);
     }

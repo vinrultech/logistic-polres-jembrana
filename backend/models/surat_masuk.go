@@ -71,12 +71,7 @@ func getRowsSuratMasuk(rows *sql.Rows, m *Model) ([]SuratMasuk, error) {
 
 	count := len(getSelectSuratMasuk())
 
-	values := make([]interface{}, count)
-	valuesPtrs := make([]interface{}, count)
-
-	for i := 0; i < count; i++ {
-		valuesPtrs[i] = &values[i]
-	}
+	values, valuesPtrs := getValuePtr(count)
 
 	for rows.Next() {
 
@@ -338,12 +333,7 @@ func (m *Model) FetchSuratMasuk(rowID string) (SuratMasuk, error) {
 
 	count := len(getSelectSuratMasuk())
 
-	values := make([]interface{}, count)
-	valuesPtrs := make([]interface{}, count)
-
-	for i := 0; i < count; i++ {
-		valuesPtrs[i] = &values[i]
-	}
+	values, valuesPtrs := getValuePtr(count)
 
 	err = row.Scan(valuesPtrs...)
 
