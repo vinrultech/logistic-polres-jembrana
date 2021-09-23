@@ -16,7 +16,7 @@
       </v-col>
       <v-col cols="12" md="6" xs="12" sm="12" lg="6" xl="6">
         <v-row>
-          <v-col cols="4">
+          <v-col cols="12" md="4" xs="12" sm="12" lg="4" xl="4">
             <v-select
               v-model="filterCari"
               :items="filters"
@@ -29,29 +29,77 @@
               single-line
             ></v-select>
           </v-col>
-          <v-col cols="8">
-            <v-text-field
-              v-model="searchText"
-              :placeholder="'Cari'"
-              rounded
-              solo
-              prepend-inner-icon="fas fa-search"
-              :append-icon="isSearch ? 'fas fa-times' : ''"
-              single-line
-              @keydown.enter="cari()"
-              @click:append="refresh()"
-              @click:prepend-inner="refresh()"
-            ></v-text-field>
+          <v-col cols="12" md="8" xs="12" sm="12" lg="8" xl="8">
+            <v-row>
+              <v-col cols="10">
+                <v-text-field
+                  v-model="searchText"
+                  :placeholder="'Cari'"
+                  rounded
+                  solo
+                  prepend-inner-icon="fas fa-search"
+                  :append-icon="isSearch ? 'fas fa-times' : ''"
+                  single-line
+                  @keydown.enter="cari()"
+                  @click:append="refresh()"
+                  @click:prepend-inner="refresh()"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="2" style="margin-left: -15px">
+                <v-btn elevation="4" fab small color="green" @click="cari()"
+                  ><v-icon small color="white">fas fa-search</v-icon></v-btn
+                >
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-    
+    <v-row style="margin-top: -60px">
+      <v-col cols="8" md="3" xs="8" sm="8" lg="3" xl="3">
+        <v-dialog
+          ref="dialog"
+          v-model="modal"
+          :return-value.sync="dates"
+          persistent
+          width="290px"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-model="dateRangeText"
+              label="Filter by Tanggal"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker v-model="dates" range>
+            <v-spacer></v-spacer>
+            <v-btn text color="primary" @click="modal = false"> Cancel </v-btn>
+            <v-btn text color="primary" @click="$refs.dialog.save(dates)">
+              OK
+            </v-btn>
+          </v-date-picker>
+        </v-dialog>
+      </v-col>
+      <v-col cols="4" md="2" xs="4" sm="4" lg="2" xl="2" style="margin-left: -15px">
+        <v-btn elevation="4" fab small color="blue" @click="filter()"
+          ><v-icon small color="white">fas fa-filter</v-icon></v-btn
+        >
+        &nbsp;&nbsp;
+        <v-btn elevation="4" fab small color="red" @click="reset()"
+          ><v-icon small color="white">fas fa-undo</v-icon></v-btn
+        >
+      </v-col>
+      
+    </v-row>
+
     <v-card class="elevation-6">
       <v-card-text>
         <v-simple-table>
           <thead>
             <tr>
+              <th class="text-center">Unit Kerja</th>
               <th class="text-center">No Surat</th>
               <th class="text-center">Tanggal Surat</th>
               <th class="text-center">Tujuan</th>
@@ -61,6 +109,9 @@
           </thead>
           <tbody>
             <tr v-for="item in items" :key="item.id">
+              <td>
+                {{ item.unit_kerja.nama }}
+              </td>
               <td>
                 {{ item.no_surat }}
               </td>
@@ -82,7 +133,7 @@
                       dark
                       color="error"
                       v-on="on"
-                      @click="remove(item.id)"
+                      @click="remove(item.row_id)"
                     >
                       <v-icon dark size="15">fas fa-trash</v-icon>
                     </v-btn>
@@ -96,13 +147,28 @@
                       fab
                       dark
                       color="primary"
-                      @click="edit(item.id)"
+                      @click="edit(item.row_id)"
                       v-on="on"
                     >
                       <v-icon dark size="15">fas fa-edit</v-icon>
                     </v-btn>
                   </template>
                   <span>Edit</span>
+                </v-tooltip>
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      x-small
+                      fab
+                      dark
+                      color="green"
+                      @click="info(item.row_id)"
+                      v-on="on"
+                    >
+                      <v-icon dark size="15">fas fa-info</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Detail</span>
                 </v-tooltip>
               </td>
             </tr>
@@ -132,7 +198,7 @@ export default {
   name: "surat_keluar",
   components: {
     Paging,
-    Breadcum
+    Breadcum,
   },
   data: (vm) => ({
     breadcums: utils.breadcumOne(SURAT_KELUAR(true)),
@@ -154,6 +220,8 @@ export default {
     searchText: "",
     isSearch: false,
     host: vm.$host,
+    modal: false,
+    dates: [],
   }),
   computed: {
     ...mapGetters({
@@ -162,7 +230,27 @@ export default {
       next_show: "surat_keluar/next_show",
       limit: "surat_keluar/limit",
       limits: "constant/limits",
+      last_id: "surat_keluar/last_id",
     }),
+    dateRangeText() {
+      return this.dates.join(" ~ ");
+    },
+  },
+  watch: {
+    limit: function () {
+      this.refresh();
+    },
+    filterCari: function () {
+      this.cari();
+    },
+    searchText: function (val) {
+      if (!(!val || /^\s*$/.test(val))) {
+        this.isSearch = true;
+      } else {
+        this.isSearch = false;
+        this.refresh();
+      }
+    },
   },
   methods: {
     changeLimit(val) {
@@ -178,8 +266,11 @@ export default {
     edit(id) {
       this.$router.push(`/admin/surat_keluar/edit/${id}`);
     },
-    async remove(id) {
-      console.log(id);
+    info(id) {
+      this.$router.push(`/admin/surat_keluar/info/${id}`);
+    },
+    async remove(row_id) {
+      //console.log(id);
       this.$swal({
         title: "Anda yakin?",
         text: "Apakah anda ingin menhapus data!",
@@ -191,36 +282,68 @@ export default {
         cancelButtonText: "Tidak",
       }).then((result) => {
         if (result.value) {
-          /*
-          this.$store.dispatch("user/remove", { vm: this, id: id }).then(() => {
-            this.get("first");
+          this.$store.dispatch("surat_keluar/remove", row_id).then(() => {
+            this.refresh();
           });
-          */
-          console.log("REMOVE");
         }
       });
     },
+    filter() {
+      this.$store.commit("surat_keluar/SET_DATES", this.dates)
+      if (this.isSearch) {
+        this.cari()
+      } else {
+        this.refresh()
+      }
+    },
+    reset() {
+      this.dates = []
+      this.$store.commit("surat_keluar/SET_DATES", [])
+      if (this.isSearch) {
+        this.cari()
+      } else {
+        this.refresh()
+      }
+    },
     get() {
-      console.log("PAGINATOR")
+      this.$store.dispatch("surat_keluar/gets", {
+          last_id: this.last_id,
+          limit: this.limit.value,
+        });
+      
     },
     previous() {
-      console.log("prev")
+      this.$store.dispatch("surat_keluar/prev");
     },
     next() {
-      console.log("next")
+      this.$store.dispatch("surat_keluar/next", this.isSearch);
     },
     cari() {
-      console.log("cari")
+      this.$store.dispatch("surat_keluar/reset");
+      this.$store.dispatch("surat_keluar/search", {
+        last_id: this.last_id,
+        limit: this.limit.value,
+        search: this.searchText,
+        filter: this.filterCari,
+      });
+    },
+    refresh() {
+      this.$store.dispatch("surat_keluar/reset");
+      this.searchText = "";
+      this.isSearch = false;
+      this.filterCari = "tujuan";
+      this.get();
     },
   },
   mounted() {
-    //this.get("first");
+    this.$store.commit("surat_keluar/SET_DATES", [])
+    this.refresh();
   },
 };
 </script>
 
 <style scoped>
 .action {
-  width: 100px;
+  width: 130px;
 }
 </style>

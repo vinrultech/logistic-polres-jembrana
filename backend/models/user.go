@@ -27,7 +27,7 @@ type User struct {
 
 func (m *Model) GetUser(username string) (User, error) {
 	sqlX := `SELECT 
-				id, username, password, role, nama, hp, foto,
+				id, username, password, role, nama, foto, hp,
 				created_at, updated_at 
 			 FROM %s 
 			 WHERE username=?`

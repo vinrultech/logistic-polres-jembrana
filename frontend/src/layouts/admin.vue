@@ -18,7 +18,7 @@
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
             <v-avatar class="white" size="40">
-              <v-icon v-if="foto === '' || foto == null" color="primary"
+              <v-icon v-if='foto === "" || foto === "null"' color="primary"
                 >fas fa-user-shield</v-icon
               >
               <img v-else :src="`${host}upload/${foto}`" />

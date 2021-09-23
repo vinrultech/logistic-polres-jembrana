@@ -5,6 +5,10 @@ export default {
     item: (state) => (row_id) => {
         return state.items.find(item => item.row_id === row_id);
     },
+    get_item: (state) => {
+        return state.item;
+    },
+    
     prev_show: (state) => {
         return state.prev_show;
     },

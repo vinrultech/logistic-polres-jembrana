@@ -196,21 +196,6 @@ func (a *App) CreateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error create user : %v", err))
 	}
 
-	/*
-
-		lastInsertedID, err := a.M.CreateUser(r)
-
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error create user : %v", err))
-		}
-
-		err = a.M.CreateUserUnitKerja(lastInsertedID, r.UnitKerja.ID)
-
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error bind user : %v", err))
-		}
-	*/
-
 	return c.JSON(http.StatusCreated, constants.H{
 		"message": "Created",
 	})

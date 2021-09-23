@@ -33,7 +33,7 @@ func (a *App) CreateSuratMasuk(c echo.Context) error {
 	} else {
 		unitKerja, err := a.M.FetchUnitKerja(int64(claims.UnitKerjaID))
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error fetch unit kerja : %v", err))
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error fetch unit kerja surat masuk: %v", err))
 		}
 		r.UnitKerja = unitKerja
 	}

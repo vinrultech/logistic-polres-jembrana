@@ -182,13 +182,22 @@ let router = new Router({
       component: () => import( /* webpackChunkName: "about" */ './views/surat_keluar/add.vue'),
     },
     {
-      path: '/admin/surat_keluar/edit/:id',
+      path: '/admin/surat_keluar/edit/:row_id',
       name: 'edit_surat_keluar',
       meta: {
         requiresAuth: true,
         layout: 'admin'
       },
       component: () => import( /* webpackChunkName: "about" */ './views/surat_keluar/edit.vue'),
+    },
+    {
+      path: '/admin/surat_keluar/info/:row_id',
+      name: 'info_surat_keluar',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/surat_keluar/info.vue'),
     },
     {
       path: '/admin/juknis',
@@ -209,7 +218,7 @@ let router = new Router({
       component: () => import( /* webpackChunkName: "about" */ './views/juknis/add.vue'),
     },
     {
-      path: '/admin/juknis/edit/:id',
+      path: '/admin/juknis/edit/:row_id',
       name: 'edit_juknis',
       meta: {
         requiresAuth: true,
