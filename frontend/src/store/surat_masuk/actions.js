@@ -3,13 +3,19 @@ import _ from 'lodash';
 
 
 export default {
-    fetch: injector.encase(['axios'], (axios) => (context, payload) => {
-        const id = payload.id;
-        axios.get(`/admin/surat_masuk/${id}`)
-            .then((response) => {
-                const item = response.data;
-                context.commit('ITEM', item);
-            })
+    fetch: injector.encase(['axios'], (axios) => (context, row_id) => {
+        return new Promise((resolve) => {
+            axios.get(`/admin/surat_masuk/${row_id}`)
+                .then((response) => {
+                    const item = response.data;
+                    context.commit('ITEM', item);
+                    context.commit("files/SET", item.files, {
+                        root: true
+                    });
+                    resolve(true)
+                })
+        })
+
     }),
     gets: injector.encase(['axios', 'toastr'], (axios, toastr) => (context, payload) => {
         let q = `limit=${payload.limit}&last_id=${payload.last_id}`
@@ -111,7 +117,7 @@ export default {
             return o.id === last_id
         });
         //console.log(`start : ${index + 1} , end : ${index + limit}`)
-        
+
 
         const items = _.slice(context.state.items, index + 1, index + 1 + limit)
         if (items.length < limit) {
@@ -130,7 +136,7 @@ export default {
                     limit: limit,
                 });
             }
-            
+
         } else {
             context.commit('PREV', true);
             context.commit('DISPLAY_ITEMS', items)
@@ -144,8 +150,8 @@ export default {
         const index = _.findIndex(context.state.items, function (o) {
             return o.id === last_id
         });
-        
-        
+
+
         let start = index - (limit - 1) - limit;
         let end = index - (limit - 1);
 
@@ -154,7 +160,7 @@ export default {
             end = index - (context.state.display_items.length - 1);
         }
 
-        
+
 
         const items = _.slice(context.state.items, start, end)
         if (items.length > 0) {

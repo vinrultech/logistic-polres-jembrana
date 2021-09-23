@@ -155,6 +155,21 @@
                   </template>
                   <span>Edit</span>
                 </v-tooltip>
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      x-small
+                      fab
+                      dark
+                      color="green"
+                      @click="info(item.row_id)"
+                      v-on="on"
+                    >
+                      <v-icon dark size="15">fas fa-info</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Detail</span>
+                </v-tooltip>
               </td>
             </tr>
           </tbody>
@@ -251,6 +266,9 @@ export default {
     edit(id) {
       this.$router.push(`/admin/surat_masuk/edit/${id}`);
     },
+    info(id) {
+      this.$router.push(`/admin/surat_masuk/info/${id}`);
+    },
     async remove(row_id) {
       //console.log(id);
       this.$swal({
@@ -326,6 +344,6 @@ export default {
 
 <style scoped>
 .action {
-  width: 100px;
+  width: 130px;
 }
 </style>

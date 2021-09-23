@@ -330,7 +330,7 @@ export default {
       this.$store.dispatch("constant/menu", 1);
     } else if (routes[2] === "unit_kerja") {
       this.$store.dispatch("constant/menu", 2);
-    } else if (routes[2] === "unit_kerja") {
+    } else if (routes[2] === "metric") {
       this.$store.dispatch("constant/menu", 3);
     } else if (routes[2] === "surat_masuk") {
       this.$store.dispatch("constant/menu", 4);

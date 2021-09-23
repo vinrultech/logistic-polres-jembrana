@@ -155,6 +155,15 @@ let router = new Router({
       component: () => import( /* webpackChunkName: "about" */ './views/surat_masuk/edit.vue'),
     },
     {
+      path: '/admin/surat_masuk/info/:row_id',
+      name: 'info_surat_masuk',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/surat_masuk/info.vue'),
+    },
+    {
       path: '/admin/surat_keluar',
       name: 'surat_keluar',
       meta: {

@@ -218,7 +218,11 @@ func (a *App) FetchSuratMasuk(c echo.Context) error {
 
 	rowID := c.Param("row_id")
 
-	suratMasuk, _ := a.M.FetchSuratMasuk(rowID)
+	suratMasuk, err := a.M.FetchSuratMasuk(rowID)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error get surat masuk : %v", err))
+	}
 
 	return c.JSON(http.StatusOK, suratMasuk)
 }
