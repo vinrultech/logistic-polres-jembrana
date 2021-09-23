@@ -325,6 +325,33 @@ let router = new Router({
       },
       component: () => import( /* webpackChunkName: "about" */ './views/unit_kerja/edit.vue'),
     },
+    {
+      path: '/admin/metric',
+      name: 'metric',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/metric/index.vue'),
+    },
+    {
+      path: '/admin/metric/create',
+      name: 'create_metric',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/metric/add.vue'),
+    },
+    {
+      path: '/admin/metric/edit/:id',
+      name: 'edit_metric',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/metric/edit.vue'),
+    },
   ]
 });
 

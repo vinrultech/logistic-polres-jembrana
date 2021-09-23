@@ -220,7 +220,7 @@ export default {
       {
         icon: "fas fa-sort-numeric-down",
         text: "Satuan Metrik",
-        href: "/admin/satuan_metrik",
+        href: "/admin/metric",
         size: 20,
         role : ["superuser"]
       },
