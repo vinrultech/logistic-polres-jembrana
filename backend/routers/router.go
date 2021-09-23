@@ -63,6 +63,14 @@ func SetupRouters(e *echo.Echo, app *controllers.App) {
 	admin.GET("/surat_keluar/search", app.SearchSuratKeluar)
 	admin.DELETE("/surat_keluar/remove/:row_id", app.RemoveSuratKeluar)
 
+	//juknis
+	admin.POST("/juknis/create", app.CreateJuknis)
+	admin.PUT("/juknis/update/:row_id", app.UpdateJuknis)
+	admin.GET("/juknis", app.GetJuknis)
+	admin.GET("/juknis/:row_id", app.FetchJuknis)
+	admin.GET("/juknis/search", app.SearchJuknis)
+	admin.DELETE("/juknis/remove/:row_id", app.RemoveJuknis)
+
 	//unit_kerja
 	admin.POST("/unit_kerja/create", app.CreateUnitKerja)
 	admin.PUT("/unit_kerja/update/:id", app.UpdateUnitKerja)

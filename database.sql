@@ -88,3 +88,28 @@ CREATE TABLE "log_metric" (
   "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE "log_jukniss" (
+  "id" serial NOT NULL,
+  "row_id" character varying(100) PRIMARY KEY,
+  "unit_kerja_id" integer NOT NULL,
+  "no_surat" character varying(100) NOT NULL,
+  "tanggal_surat" character varying(100) NOT NULL,
+  "perihal" character varying(250) NOT NULL,
+  "isi" text NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE "log_barangs" (
+  "id" serial NOT NULL,
+  "row_id" character varying(100) PRIMARY KEY,
+  "unit_kerja_id" integer NOT NULL,
+  "kategori_id" integer NOT NULL,
+  "metric_id" integer NOT NULL,
+  "kode" character varying(100) NOT NULL,
+  "nama" character varying(250) NOT NULL,
+  "jumlah" bigint NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

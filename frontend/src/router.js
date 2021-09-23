@@ -227,6 +227,15 @@ let router = new Router({
       component: () => import( /* webpackChunkName: "about" */ './views/juknis/edit.vue'),
     },
     {
+      path: '/admin/juknis/info/:row_id',
+      name: 'info_juknis',
+      meta: {
+        requiresAuth: true,
+        layout: 'admin'
+      },
+      component: () => import( /* webpackChunkName: "about" */ './views/juknis/info.vue'),
+    },
+    {
       path: '/admin/inventory',
       name: 'inventory',
       meta: {
