@@ -81,3 +81,10 @@ ADD "unit_kerja_id" integer NOT NULL;
 
 ALTER TABLE "log_surat_keluars"
 ADD "unit_kerja_id" integer NOT NULL;
+
+CREATE TABLE "log_metric" (
+  "id" serial NOT NULL PRIMARY KEY,
+  "nama" character varying(250) NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
