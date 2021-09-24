@@ -30,6 +30,16 @@ func getSelectSuratMasuk() []string {
 	return []string{"id", "row_id", "no_surat", "tanggal_surat", "dari", "perihal", "isi", "unit_kerja_id", "created_at", "updated_at"}
 }
 
+func getInsertSuratMasuk() string {
+	return db.Insert(tableSuratMasuk, "row_id", "no_surat",
+		"tanggal_surat", "dari", "perihal", "isi", "unit_kerja_id")
+}
+
+func getUpdateSuratMasuk() string {
+	return db.Update(tableSuratMasuk, "row_id",
+		"no_surat", "tanggal_surat", "dari", "perihal", "isi", "updated_at")
+}
+
 func getRowSuratMasuk(values []interface{}, m *Model) (SuratMasuk, error) {
 	item := SuratMasuk{}
 	var unitKerjaID int64
@@ -91,14 +101,12 @@ func getRowsSuratMasuk(rows *sql.Rows, m *Model) ([]SuratMasuk, error) {
 
 func (m *Model) CreateSuratMasuk(r SuratMasuk) error {
 
-	sqlX := db.Insert(tableSuratMasuk, "row_id", "no_surat",
-		"tanggal_surat", "dari", "perihal", "isi", "unit_kerja_id")
+	sqlX := getInsertSuratMasuk()
 
 	sqlX = m.Db.Rebind(sqlX)
 
-	_, err := m.Db.Exec(sqlX, r.RowID, r.NoSurat, r.TanggalSurat, r.Dari, r.Perihal, r.Isi, r.UnitKerja.ID)
-
-	if err != nil {
+	if _, err := m.Db.Exec(sqlX, r.RowID, r.NoSurat, r.TanggalSurat,
+		r.Dari, r.Perihal, r.Isi, r.UnitKerja.ID); err != nil {
 		loggers.Log.Errorln(err.Error())
 		return err
 	}
@@ -115,39 +123,22 @@ func (m *Model) CreateSuratMasukWithTransaction(r SuratMasuk) error {
 		return err
 	}
 
-	sqlInsert := db.Insert(tableSuratMasuk, "row_id", "no_surat",
-		"tanggal_surat", "dari", "perihal", "isi", "unit_kerja_id")
+	sqlX := getInsertSuratMasuk()
 
-	sqlInsert = m.Db.Rebind(sqlInsert)
+	sqlX = m.Db.Rebind(sqlX)
 
-	_, err = tx.Exec(sqlInsert, r.RowID, r.NoSurat,
-		r.TanggalSurat, r.Dari, r.Perihal, r.Isi, r.UnitKerja.ID)
-
-	if err != nil {
+	if _, err = tx.Exec(sqlX, r.RowID, r.NoSurat,
+		r.TanggalSurat, r.Dari, r.Perihal, r.Isi, r.UnitKerja.ID); err != nil {
 		loggers.Log.Errorln(err.Error())
 		return err
 	}
 
-	for _, file := range r.Files {
-		file.RowID = r.RowID
-		file.Tipe = "surat_masuk"
-
-		sqlFileInsert := db.Insert(tableFile, "file_id", "filename", "url", "row_id", "tipe")
-
-		sqlFileInsert = m.Db.Rebind(sqlFileInsert)
-
-		_, err := tx.Exec(sqlFileInsert, file.FileID, file.Filename, file.Url, file.RowID, file.Tipe)
-
-		if err != nil {
-			loggers.Log.Errorln(err.Error())
-			return err
-		}
-
+	if err := m.TxInsertFiles(tx, r.Files, r.RowID, "surat_masuk"); err != nil {
+		loggers.Log.Errorln(err.Error())
+		return err
 	}
 
-	err = tx.Commit()
-
-	if err != nil {
+	if err = tx.Commit(); err != nil {
 		loggers.Log.Errorln(err.Error())
 		return err
 	}
@@ -166,40 +157,22 @@ func (m *Model) UpdateSuratMasukWithTransaction(r SuratMasuk, rowID string) erro
 
 	updatedAt := constants.GetDatetimeNow()
 
-	sqlUpdate := db.Update(tableSuratMasuk, "row_id",
-		"no_surat", "tanggal_surat", "dari", "perihal", "isi", "updated_at")
+	sqlX := getUpdateSuratMasuk()
 
-	sqlUpdate = m.Db.Rebind(sqlUpdate)
+	sqlX = m.Db.Rebind(sqlX)
 
-	_, err = tx.Exec(sqlUpdate, r.NoSurat,
-		r.TanggalSurat, r.Dari, r.Perihal, r.Isi, updatedAt, rowID)
-
-	if err != nil {
+	if _, err = tx.Exec(sqlX, r.NoSurat,
+		r.TanggalSurat, r.Dari, r.Perihal, r.Isi, updatedAt, rowID); err != nil {
 		loggers.Log.Errorln(err.Error())
 		return err
 	}
 
-	for _, file := range r.Files {
-		if file.Status == "new" {
-			file.RowID = r.RowID
-			file.Tipe = "surat_masuk"
-
-			sqlFileInsert := db.Insert(tableFile, "file_id", "filename", "url", "row_id", "tipe")
-
-			sqlFileInsert = m.Db.Rebind(sqlFileInsert)
-
-			_, err := tx.Exec(sqlFileInsert, file.FileID, file.Filename, file.Url, file.RowID, file.Tipe)
-
-			if err != nil {
-				loggers.Log.Errorln(err.Error())
-				return err
-			}
-		}
+	if err := m.TxInsertFiles(tx, r.Files, r.RowID, "surat_masuk"); err != nil {
+		loggers.Log.Errorln(err.Error())
+		return err
 	}
 
-	err = tx.Commit()
-
-	if err != nil {
+	if err = tx.Commit(); err != nil {
 		loggers.Log.Errorln(err.Error())
 		return err
 	}
@@ -213,9 +186,7 @@ func (m *Model) RemoveSuratMasuk(rowID string) error {
 
 	sqlX = m.Db.Rebind(sqlX)
 
-	_, err := m.Db.Exec(sqlX, rowID)
-
-	if err != nil {
+	if _, err := m.Db.Exec(sqlX, rowID); err != nil {
 		loggers.Log.Errorln(err.Error())
 		return err
 	}
@@ -223,89 +194,35 @@ func (m *Model) RemoveSuratMasuk(rowID string) error {
 	return nil
 }
 
-func (m *Model) RemoveSuratMasukTransaction(rowID string) ([]File, error) {
-
-	files := []File{}
+func (m *Model) RemoveSuratMasukTransaction(rowID string, files []File) error {
 
 	tx, err := m.Db.Begin()
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return files, err
+		return err
 	}
 
-	sqlFetch := db.Fetch(tableSuratMasuk, "row_id", getSelectSuratMasuk())
+	sqlX := db.Delete(tableSuratMasuk, "row_id")
 
-	sqlFetch = m.Db.Rebind(sqlFetch)
+	sqlX = m.Db.Rebind(sqlX)
 
-	stmt, err := tx.Prepare(sqlFetch)
-
-	if err != nil {
+	if _, err = tx.Exec(sqlX, rowID); err != nil {
 		loggers.Log.Errorln(err.Error())
-		return files, err
+		return err
 	}
 
-	defer stmt.Close()
-
-	row := stmt.QueryRow(rowID)
-
-	count := len(getSelectSuratMasuk())
-
-	values := make([]interface{}, count)
-	valuesPtrs := make([]interface{}, count)
-
-	for i := 0; i < count; i++ {
-		valuesPtrs[i] = &values[i]
-	}
-
-	err = row.Scan(valuesPtrs...)
-
-	if err != nil {
+	if err := m.TxRemoveFiles(tx, files); err != nil {
 		loggers.Log.Errorln(err.Error())
-		return files, err
+		return err
 	}
 
-	item, err := getRowSuratMasuk(values, m)
-
-	if err != nil {
+	if tx.Commit(); err != nil {
 		loggers.Log.Errorln(err.Error())
-		return files, err
+		return err
 	}
 
-	files = item.Files
-
-	sqlDelete := db.Delete(tableSuratMasuk, "row_id")
-
-	sqlDelete = m.Db.Rebind(sqlDelete)
-
-	_, err = tx.Exec(sqlDelete, rowID)
-
-	if err != nil {
-		loggers.Log.Errorln(err.Error())
-		return files, err
-	}
-
-	for _, file := range files {
-		sqlFileDelete := db.Delete(tableFile, "file_id")
-
-		sqlFileDelete = m.Db.Rebind(sqlFileDelete)
-
-		_, err := tx.Exec(sqlFileDelete, file.FileID)
-
-		if err != nil {
-			loggers.Log.Errorln(err.Error())
-			return files, err
-		}
-	}
-
-	tx.Commit()
-
-	if err != nil {
-		loggers.Log.Errorln(err.Error())
-		return files, err
-	}
-
-	return files, nil
+	return nil
 }
 
 func (m *Model) FetchSuratMasuk(rowID string) (SuratMasuk, error) {

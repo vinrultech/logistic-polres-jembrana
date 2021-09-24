@@ -30,6 +30,16 @@ func getSelectJuknis() []string {
 		"perihal", "isi", "unit_kerja_id", "created_at", "updated_at"}
 }
 
+func getInsertJuknis() string {
+	return db.Insert(tableJuknis, "row_id", "no_surat",
+		"tanggal_surat", "perihal", "isi", "unit_kerja_id")
+}
+
+func getUpdateJuknis() string {
+	return db.Update(tableJuknis, "row_id",
+		"no_surat", "tanggal_surat", "perihal", "isi", "updated_at")
+}
+
 func getRowJuknis(values []interface{}, m *Model) (Juknis, error) {
 	item := Juknis{}
 	var unitKerjaID int64
@@ -90,14 +100,11 @@ func getRowsJuknis(rows *sql.Rows, m *Model) ([]Juknis, error) {
 
 func (m *Model) CreateJuknis(r Juknis) error {
 
-	sqlX := db.Insert(tableJuknis, "row_id", "no_surat",
-		"tanggal_surat", "perihal", "isi", "unit_kerja_id")
+	sqlX := getInsertJuknis()
 
 	sqlX = m.Db.Rebind(sqlX)
 
-	_, err := m.Db.Exec(sqlX, r.RowID, r.NoSurat, r.TanggalSurat, r.Perihal, r.Isi, r.UnitKerja.ID)
-
-	if err != nil {
+	if _, err := m.Db.Exec(sqlX, r.RowID, r.NoSurat, r.TanggalSurat, r.Perihal, r.Isi, r.UnitKerja.ID); err != nil {
 		loggers.Log.Errorln(err.Error())
 		return err
 	}
@@ -114,39 +121,22 @@ func (m *Model) CreateJuknisWithTransaction(r Juknis) error {
 		return err
 	}
 
-	sqlInsert := db.Insert(tableJuknis, "row_id", "no_surat",
-		"tanggal_surat", "perihal", "isi", "unit_kerja_id")
+	sqlX := getInsertJuknis()
 
-	sqlInsert = m.Db.Rebind(sqlInsert)
+	sqlX = m.Db.Rebind(sqlX)
 
-	_, err = tx.Exec(sqlInsert, r.RowID, r.NoSurat,
-		r.TanggalSurat, r.Perihal, r.Isi, r.UnitKerja.ID)
-
-	if err != nil {
+	if _, err = tx.Exec(sqlX, r.RowID, r.NoSurat,
+		r.TanggalSurat, r.Perihal, r.Isi, r.UnitKerja.ID); err != nil {
 		loggers.Log.Errorln(err.Error())
 		return err
 	}
 
-	for _, file := range r.Files {
-		file.RowID = r.RowID
-		file.Tipe = "juknis"
-
-		sqlFileInsert := db.Insert(tableFile, "file_id", "filename", "url", "row_id", "tipe")
-
-		sqlFileInsert = m.Db.Rebind(sqlFileInsert)
-
-		_, err := tx.Exec(sqlFileInsert, file.FileID, file.Filename, file.Url, file.RowID, file.Tipe)
-
-		if err != nil {
-			loggers.Log.Errorln(err.Error())
-			return err
-		}
-
+	if err := m.TxInsertFiles(tx, r.Files, r.RowID, "juknis"); err != nil {
+		loggers.Log.Errorln(err.Error())
+		return err
 	}
 
-	err = tx.Commit()
-
-	if err != nil {
+	if err = tx.Commit(); err != nil {
 		loggers.Log.Errorln(err.Error())
 		return err
 	}
@@ -165,40 +155,22 @@ func (m *Model) UpdateJuknisWithTransaction(r Juknis, rowID string) error {
 
 	updatedAt := constants.GetDatetimeNow()
 
-	sqlUpdate := db.Update(tableJuknis, "row_id",
-		"no_surat", "tanggal_surat", "perihal", "isi", "updated_at")
+	sqlX := getUpdateJuknis()
 
-	sqlUpdate = m.Db.Rebind(sqlUpdate)
+	sqlX = m.Db.Rebind(sqlX)
 
-	_, err = tx.Exec(sqlUpdate, r.NoSurat,
-		r.TanggalSurat, r.Perihal, r.Isi, updatedAt, rowID)
-
-	if err != nil {
+	if _, err = tx.Exec(sqlX, r.NoSurat,
+		r.TanggalSurat, r.Perihal, r.Isi, updatedAt, rowID); err != nil {
 		loggers.Log.Errorln(err.Error())
 		return err
 	}
 
-	for _, file := range r.Files {
-		if file.Status == "new" {
-			file.RowID = r.RowID
-			file.Tipe = "juknis"
-
-			sqlFileInsert := db.Insert(tableFile, "file_id", "filename", "url", "row_id", "tipe")
-
-			sqlFileInsert = m.Db.Rebind(sqlFileInsert)
-
-			_, err := tx.Exec(sqlFileInsert, file.FileID, file.Filename, file.Url, file.RowID, file.Tipe)
-
-			if err != nil {
-				loggers.Log.Errorln(err.Error())
-				return err
-			}
-		}
+	if err := m.TxInsertFiles(tx, r.Files, r.RowID, "juknis"); err != nil {
+		loggers.Log.Errorln(err.Error())
+		return err
 	}
 
-	err = tx.Commit()
-
-	if err != nil {
+	if err = tx.Commit(); err != nil {
 		loggers.Log.Errorln(err.Error())
 		return err
 	}
@@ -212,9 +184,7 @@ func (m *Model) RemoveJuknis(rowID string) error {
 
 	sqlX = m.Db.Rebind(sqlX)
 
-	_, err := m.Db.Exec(sqlX, rowID)
-
-	if err != nil {
+	if _, err := m.Db.Exec(sqlX, rowID); err != nil {
 		loggers.Log.Errorln(err.Error())
 		return err
 	}
@@ -222,89 +192,35 @@ func (m *Model) RemoveJuknis(rowID string) error {
 	return nil
 }
 
-func (m *Model) RemoveJuknisTransaction(rowID string) ([]File, error) {
-
-	files := []File{}
+func (m *Model) RemoveJuknisTransaction(rowID string, files []File) error {
 
 	tx, err := m.Db.Begin()
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
-		return files, err
+		return err
 	}
 
-	sqlFetch := db.Fetch(tableJuknis, "row_id", getSelectJuknis())
+	sqlX := db.Delete(tableJuknis, "row_id")
 
-	sqlFetch = m.Db.Rebind(sqlFetch)
+	sqlX = m.Db.Rebind(sqlX)
 
-	stmt, err := tx.Prepare(sqlFetch)
-
-	if err != nil {
+	if _, err = tx.Exec(sqlX, rowID); err != nil {
 		loggers.Log.Errorln(err.Error())
-		return files, err
+		return err
 	}
 
-	defer stmt.Close()
-
-	row := stmt.QueryRow(rowID)
-
-	count := len(getSelectJuknis())
-
-	values := make([]interface{}, count)
-	valuesPtrs := make([]interface{}, count)
-
-	for i := 0; i < count; i++ {
-		valuesPtrs[i] = &values[i]
-	}
-
-	err = row.Scan(valuesPtrs...)
-
-	if err != nil {
+	if err := m.TxRemoveFiles(tx, files); err != nil {
 		loggers.Log.Errorln(err.Error())
-		return files, err
+		return err
 	}
 
-	item, err := getRowJuknis(values, m)
-
-	if err != nil {
+	if tx.Commit(); err != nil {
 		loggers.Log.Errorln(err.Error())
-		return files, err
+		return err
 	}
 
-	files = item.Files
-
-	sqlDelete := db.Delete(tableJuknis, "row_id")
-
-	sqlDelete = m.Db.Rebind(sqlDelete)
-
-	_, err = tx.Exec(sqlDelete, rowID)
-
-	if err != nil {
-		loggers.Log.Errorln(err.Error())
-		return files, err
-	}
-
-	for _, file := range files {
-		sqlFileDelete := db.Delete(tableFile, "file_id")
-
-		sqlFileDelete = m.Db.Rebind(sqlFileDelete)
-
-		_, err := tx.Exec(sqlFileDelete, file.FileID)
-
-		if err != nil {
-			loggers.Log.Errorln(err.Error())
-			return files, err
-		}
-	}
-
-	tx.Commit()
-
-	if err != nil {
-		loggers.Log.Errorln(err.Error())
-		return files, err
-	}
-
-	return files, nil
+	return nil
 }
 
 func (m *Model) FetchJuknis(rowID string) (Juknis, error) {

@@ -46,9 +46,7 @@ func (a *App) CreateSuratMasuk(c echo.Context) error {
 
 	r.RowID = u1.String()
 
-	err := a.M.CreateSuratMasukWithTransaction(r)
-
-	if err != nil {
+	if err := a.M.CreateSuratMasukWithTransaction(r); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error create surat masuk with transaction : %v", err))
 	}
 
@@ -173,9 +171,7 @@ func (a *App) UpdateSuratMasuk(c echo.Context) error {
 		return err
 	}
 
-	err := a.M.UpdateSuratMasukWithTransaction(r, rowID)
-
-	if err != nil {
+	if err := a.M.UpdateSuratMasukWithTransaction(r, rowID); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error update surat masuk with transaction : %v", err))
 	}
 
@@ -188,9 +184,15 @@ func (a *App) RemoveSuratMasuk(c echo.Context) error {
 
 	rowID := c.Param("row_id")
 
-	files, err := a.M.RemoveSuratMasukTransaction(rowID)
+	r, err := a.M.FetchSuratMasuk(rowID)
+
+	files := r.Files
 
 	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error remove surat masuk transaction : %v", err))
+	}
+
+	if err = a.M.RemoveSuratMasukTransaction(rowID, files); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error remove surat masuk transaction : %v", err))
 	}
 
@@ -198,9 +200,7 @@ func (a *App) RemoveSuratMasuk(c echo.Context) error {
 
 		filename := fmt.Sprintf("files/%s_%s", file.FileID, file.Filename)
 
-		err = os.Remove(filename)
-
-		if err != nil {
+		if err = os.Remove(filename); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error surat masuk,remove file : %v", err))
 		}
 	}

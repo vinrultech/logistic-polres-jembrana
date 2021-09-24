@@ -46,9 +46,7 @@ func (a *App) CreateJuknis(c echo.Context) error {
 
 	r.RowID = u1.String()
 
-	err := a.M.CreateJuknisWithTransaction(r)
-
-	if err != nil {
+	if err := a.M.CreateJuknisWithTransaction(r); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error create juknis with transaction : %v", err))
 	}
 
@@ -173,9 +171,7 @@ func (a *App) UpdateJuknis(c echo.Context) error {
 		return err
 	}
 
-	err := a.M.UpdateJuknisWithTransaction(r, rowID)
-
-	if err != nil {
+	if err := a.M.UpdateJuknisWithTransaction(r, rowID); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error update juknis with transaction : %v", err))
 	}
 
@@ -188,9 +184,15 @@ func (a *App) RemoveJuknis(c echo.Context) error {
 
 	rowID := c.Param("row_id")
 
-	files, err := a.M.RemoveJuknisTransaction(rowID)
+	r, err := a.M.FetchJuknis(rowID)
+
+	files := r.Files
 
 	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error fetch juknis : %v", err))
+	}
+
+	if err = a.M.RemoveJuknisTransaction(rowID, files); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error remove juknis transaction : %v", err))
 	}
 
@@ -198,9 +200,7 @@ func (a *App) RemoveJuknis(c echo.Context) error {
 
 		filename := fmt.Sprintf("files/%s_%s", file.FileID, file.Filename)
 
-		err = os.Remove(filename)
-
-		if err != nil {
+		if err = os.Remove(filename); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error juknis,remove file : %v", err))
 		}
 	}

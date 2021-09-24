@@ -1,8 +1,10 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 
+	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/db"
 	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/loggers"
 	"gopkg.in/guregu/null.v4"
 )
@@ -18,6 +20,48 @@ type File struct {
 	Status    string    `json:"status" validate:"required"`
 	CreatedAt null.Time `json:"created_at"`
 	UpdatedAt null.Time `json:"updated_at"`
+}
+
+func getInsertFile() string {
+	return db.Insert(tableFile, "file_id", "filename", "url", "row_id", "tipe")
+}
+
+func txInsertFile(query string, tx *sql.Tx, file File) error {
+
+	if _, err := tx.Exec(query, file.FileID, file.Filename, file.Url, file.RowID, file.Tipe); err != nil {
+		loggers.Log.Errorln(err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (m *Model) TxInsertFiles(tx *sql.Tx, files []File, rowId string, tipe string) error {
+	sqlX := getInsertFile()
+	sqlX = m.Db.Rebind(sqlX)
+	for _, file := range files {
+		if file.Status == "new" {
+			file.RowID = rowId
+			file.Tipe = tipe
+			if err := txInsertFile(sqlX, tx, file); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (m *Model) TxRemoveFiles(tx *sql.Tx, files []File) error {
+	sqlX := db.Delete(tableFile, "file_id")
+	sqlX = m.Db.Rebind(sqlX)
+	for _, file := range files {
+		if _, err := tx.Exec(sqlX, file.FileID); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (m *Model) CreateFile(r File) error {
