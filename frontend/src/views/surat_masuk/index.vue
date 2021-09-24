@@ -60,7 +60,6 @@
         <v-dialog
           ref="dialog"
           v-model="modal"
-          :return-value.sync="dates"
           persistent
           width="290px"
         >
@@ -76,7 +75,7 @@
           <v-date-picker v-model="dates" range>
             <v-spacer></v-spacer>
             <v-btn text color="primary" @click="modal = false"> Cancel </v-btn>
-            <v-btn text color="primary" @click="$refs.dialog.save(dates)">
+            <v-btn text color="primary" @click="saveDate(dates)">
               OK
             </v-btn>
           </v-date-picker>
@@ -194,6 +193,7 @@ import Breadcum from "../../components/breadcum";
 import { SURAT_MASUK } from "../../breadcum";
 import utils from "../../utils";
 import { mapGetters } from "vuex";
+import moment from 'moment';
 export default {
   name: "surat_masuk",
   components: {
@@ -334,6 +334,26 @@ export default {
       this.filterCari = "dari";
       this.get();
     },
+    saveDate(dates) {
+      if (dates.length >= 2) {
+        const date1 = moment(dates[0])
+        const date2 = moment(dates[1])
+        const jml = date2.diff(date1)
+        
+        if (jml < 0) {
+          this.dates = []
+          this.$toastr.e("Pilihan tanggal kedua harus lebih dari tanggal kedua")
+        } else {
+          this.dates = dates
+          this.modal = false
+          this.filter()
+        }
+        
+      } else {
+        this.$toastr.e("Harus pilih dua tanggal")
+      }
+      
+    }
   },
   mounted() {
     this.$store.commit("surat_masuk/SET_DATES", [])

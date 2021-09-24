@@ -56,6 +56,45 @@
       </v-col>
     </v-row>
 
+    <v-row style="margin-top: -60px">
+      <v-col cols="4" md="2" xs="4" sm="4" lg="2" xl="2">
+        <v-select
+              v-model="filterBy"
+              :items="filterBys"
+              menu-props="auto"
+              item-text="nama"
+              item-value="id"
+              label="Filter By"
+              hide-details
+              prepend-icon="fas fa-filter"
+              single-line
+              @change="change"
+            ></v-select>
+      </v-col>
+      <v-col cols="4" md="2" xs="4" sm="4" lg="2" xl="3">
+        <v-select
+              v-model="filterValue"
+              :items="filterValues"
+              menu-props="auto"
+              item-text="nama"
+              item-value="id"
+              label="Values"
+              hide-details
+              single-line
+            ></v-select>
+      </v-col>
+      <v-col cols="4" md="2" xs="4" sm="4" lg="2" xl="2" style="margin-left: -15px">
+        <v-btn elevation="4" fab small color="blue" @click="filter()" :disabled="!valid"
+          ><v-icon small color="white">fas fa-filter</v-icon></v-btn
+        >
+        &nbsp;&nbsp;
+        <v-btn elevation="4" fab small color="red" @click="reset()"
+          ><v-icon small color="white">fas fa-undo</v-icon></v-btn
+        >
+      </v-col>
+      
+    </v-row>
+
     <v-card class="elevation-6">
       <v-card-text>
         <v-simple-table>
@@ -159,10 +198,24 @@ export default {
         nama: "Kode",
       },
     ],
+    filterBys: [
+      {
+        id: "kategori_id",
+        nama: "Kategori",
+      },
+      {
+        id: "metric_id",
+        nama: "Satuan Metrik",
+      },
+    ],
+    filterBy: null,
+    filterValue: null,
+    filterValues: [],
     filterCari: "nama",
     searchText: "",
     isSearch: false,
     host: vm.$host,
+    
   }),
   computed: {
     ...mapGetters({
@@ -173,6 +226,11 @@ export default {
       limits: "constant/limits",
       last_id: "barang/last_id",
     }),
+    valid : {
+      get () {
+        return this.filterBy !== null && this.filterValue !== null
+      }
+    }
   },
   watch: {
     limit: function () {
@@ -188,7 +246,8 @@ export default {
         this.isSearch = false;
         this.refresh();
       }
-    },
+    }
+    
   },
   methods: {
     changeLimit(val) {
@@ -251,8 +310,63 @@ export default {
       this.filterCari = "nama";
       this.get();
     },
+    filter() {
+      this.$store.commit("barang/SET_FILTERS", [this.filterBy, this.filterValue])
+      if (this.isSearch) {
+        this.cari()
+      } else {
+        this.refresh()
+      }
+    },
+    reset() {
+      this.filterBy = null
+      this.filterValue = null
+      this.filterValues = []
+
+      this.$store.commit("barang/SET_FILTERS", [])
+      if (this.isSearch) {
+        this.cari()
+      } else {
+        this.refresh()
+      }
+    },
+    change() {
+      this.filterValue = null
+      if (this.filterBy === "kategori_id") {
+        if (this.$store.getters["kategori/all_items"].length > 0) {
+          this.filterValues = this.$store.getters["kategori/all_items"]
+        } else {
+          this.$store.dispatch("kategori/all").then(() => {
+            this.filterValues = this.$store.getters["kategori/all_items"]
+          })
+        }
+      } else if (this.filterBy === "metric_id") {
+        if (this.$store.getters["metric/all_items"].length > 0) {
+          this.filterValues = this.$store.getters["metric/all_items"]
+        } else {
+          this.$store.dispatch("metric/all").then(() => {
+            this.filterValues = this.$store.getters["metric/all_items"]
+          })
+        }
+      } else if (this.filterBy === "unit_kerja_id") {
+        if (this.$store.getters["unit_kerja/all_items"].length > 0) {
+          this.filterValues = this.$store.getters["unit_kerja/all_items"]
+        } else {
+          this.$store.dispatch("unit_kerja/all").then(() => {
+            this.filterValues = this.$store.getters["unit_kerja/all_items"]
+          })
+        }
+      }
+    }
   },
   mounted() {
+    if (utils.role() === "superuser") {
+      this.filterBys.push({
+        id: "unit_kerja_id",
+        nama: "Unit Kerja",
+      })
+    }
+    this.$store.commit("barang/SET_FILTERS", [])
     this.refresh();
     //this.$store.dispatch("barang/gets", { last_id: this.last_id, limit : 10 });
   },

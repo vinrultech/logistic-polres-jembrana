@@ -88,6 +88,20 @@ func (a *App) GetBarang(c echo.Context) error {
 		filterValues = append(filterValues, int64(claims.UnitKerjaID))
 	}
 
+	filterByParam := c.QueryParam("filter_by")
+	filterByValue := c.QueryParam("filter_value")
+
+	if filterByParam != "" && filterByValue != "" {
+		filterValue, err := strconv.Atoi(filterByValue)
+
+		if err != nil {
+			loggers.Log.Errorln(err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error barang convert filter_value param to int : %v", err))
+		}
+		filters = append(filters, fmt.Sprintf("b.%s=?", filterByParam))
+		filterValues = append(filterValues, filterValue)
+	}
+
 	items, err := a.M.GetBarang(int64(lastID), limit, filters, filterValues)
 
 	if err != nil {
@@ -130,6 +144,20 @@ func (a *App) SearchBarang(c echo.Context) error {
 	if claims.UnitKerjaID != 0 {
 		filters = append(filters, " b.unit_kerja_id=? ")
 		filterValues = append(filterValues, int64(claims.UnitKerjaID))
+	}
+
+	filterByParam := c.QueryParam("filter_by")
+	filterByValue := c.QueryParam("filter_value")
+
+	if filterByParam != "" && filterByValue != "" {
+		filterValue, err := strconv.Atoi(filterByValue)
+
+		if err != nil {
+			loggers.Log.Errorln(err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error barang convert filter_value param to int : %v", err))
+		}
+		filters = append(filters, fmt.Sprintf("b.%s=?", filterByParam))
+		filterValues = append(filterValues, filterValue)
 	}
 
 	items, err := a.M.SearchBarang(int64(lastID), limit, []string{filter, search}, filters, filterValues)

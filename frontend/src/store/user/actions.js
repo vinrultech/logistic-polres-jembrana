@@ -139,7 +139,7 @@ export default {
                     }
                 } else {
                     if (payload.last_id !== 0) {
-                        toastr.s("No more data next")
+                        toastr.i("No more data next")
                     }
                 }
             })
@@ -162,7 +162,7 @@ export default {
                     }
                 } else {
                     if (payload.last_id !== 0) {
-                        toastr.s("No more data next")
+                        toastr.i("No more data next")
                     }
                 }
             })
@@ -265,7 +265,7 @@ export default {
             context.commit('DISPLAY_ITEMS', items)
         } else {
             context.commit('PREV', false);
-            toastr.s("No more data previous")
+            toastr.i("No more data previous")
         }
     }),
     reset: (context) => {

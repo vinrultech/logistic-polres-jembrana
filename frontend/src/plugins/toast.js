@@ -4,7 +4,7 @@ import VueToastr from "vue-toastr";
 // use plugin
 Vue.use(VueToastr, {
     /* OverWrite Plugin Options if you need */
-    defaultTimeout: 3000,
+    defaultTimeout: 2000,
     defaultPosition: "toast-top-right",
-    defaultStyle: { "background-color": "green" },
+    //defaultStyle: { "background-color": "green" },
 });

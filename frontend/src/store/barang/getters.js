@@ -28,5 +28,8 @@ export default {
     },
     filter_search: (state) => {
         return state.filter_search;
-    }
+    },
+    filters: (state) => {
+        return state.filters;
+    },
 }

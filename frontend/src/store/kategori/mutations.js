@@ -39,5 +39,5 @@ export default {
         state.item = {};
         state.search = ""
         state.filter_search = ""
-    },
+    }
 }

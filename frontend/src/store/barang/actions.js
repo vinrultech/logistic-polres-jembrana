@@ -13,6 +13,12 @@ export default {
     }),
     gets: injector.encase(['axios', 'toastr'], (axios, toastr) => (context, payload) => {
         let q = `limit=${payload.limit}&last_id=${payload.last_id}`
+
+        if (context.getters.filters.length > 1) {
+            const filters = context.getters.filters;
+            q += `&filter_by=${filters[0]}&filter_value=${filters[1]}`
+        }
+
         axios.get(`/admin/barang?${q}`)
             .then((response) => {
                 const items = response.data;
@@ -25,7 +31,7 @@ export default {
                     }
                 } else {
                     if (payload.last_id !== 0) {
-                        toastr.s("No more data next")
+                        toastr.i("No more data next")
                     }
                 }
             })
@@ -43,6 +49,12 @@ export default {
     }),
     search: injector.encase(['axios', 'toastr'], (axios, toastr) => (context, payload) => {
         let q = `limit=${payload.limit}&last_id=${payload.last_id}&search=${payload.search}&filter=${payload.filter}`;
+
+        if (context.getters.filters.length > 1) {
+            const filters = context.getters.filters;
+            q += `&filter_by=${filters[0]}&filter_value=${filters[1]}`
+        }
+
         axios.get(`/admin/barang/search?${q}`)
             .then((response) => {
                 const items = response.data;
@@ -59,7 +71,7 @@ export default {
                     }
                 } else {
                     if (payload.last_id !== 0) {
-                        toastr.s("No more data next")
+                        toastr.i("No more data next")
                     }
                 }
             })
@@ -162,7 +174,7 @@ export default {
             context.commit('DISPLAY_ITEMS', items)
         } else {
             context.commit('PREV', false);
-            toastr.s("No more data previous")
+            toastr.i("No more data previous")
         }
     }),
     reset: (context) => {

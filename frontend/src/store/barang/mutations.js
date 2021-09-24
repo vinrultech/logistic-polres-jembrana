@@ -32,6 +32,9 @@ export default {
         state.search = item.search;
         state.filter_search = item.filter_search;
     },
+    SET_FILTERS: (state, filters) => {
+        state.filters = filters
+    },
     RESET: (state) => {
         state.last_id = 0;
         state.items = [];
