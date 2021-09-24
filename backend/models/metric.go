@@ -188,10 +188,10 @@ func (m *Model) GetMetric(lastID int64, limit int) ([]Metric, error) {
 
 	items := []Metric{}
 
-	sqlX := db.QueryPaging(tableMetric, "id", false, getSelectMetric())
+	sqlX := db.QueryPagingJoin(tableMetric, "id", false, getSelectMetric(), []db.Join{}, []string{})
 
 	if lastID == 0 {
-		sqlX = db.QueryPaging(tableMetric, "id", true, getSelectMetric())
+		sqlX = db.QueryPagingJoin(tableMetric, "id", true, getSelectMetric(), []db.Join{}, []string{})
 	}
 
 	sqlX = m.Db.Rebind(sqlX)
@@ -205,13 +205,7 @@ func (m *Model) GetMetric(lastID int64, limit int) ([]Metric, error) {
 
 	defer stmt.Close()
 
-	var rows *sql.Rows
-
-	if lastID == 0 {
-		rows, err = stmt.Query(limit)
-	} else {
-		rows, err = stmt.Query(lastID, limit)
-	}
+	rows, err := GetQueryRow(stmt, lastID, limit, "", "", nil)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
@@ -232,10 +226,10 @@ func (m *Model) SearchMetric(lastID int64, limit int, search string, filter stri
 
 	items := []Metric{}
 
-	sqlX := db.QueryPagingSearch(tableMetric, "id", false, filter, getSelectMetric())
+	sqlX := db.QueryPagingJoinSearch(tableMetric, "id", false, getSelectMetric(), []db.Join{}, filter, []string{})
 
 	if lastID == 0 {
-		sqlX = db.QueryPagingSearch(tableMetric, "id", true, filter, getSelectMetric())
+		sqlX = db.QueryPagingJoinSearch(tableMetric, "id", true, getSelectMetric(), []db.Join{}, filter, []string{})
 	}
 
 	sqlX = m.Db.Rebind(sqlX)
@@ -249,13 +243,7 @@ func (m *Model) SearchMetric(lastID int64, limit int, search string, filter stri
 
 	defer stmt.Close()
 
-	var rows *sql.Rows
-
-	if lastID == 0 {
-		rows, err = stmt.Query(search, limit)
-	} else {
-		rows, err = stmt.Query(lastID, search, limit)
-	}
+	rows, err := GetQueryRow(stmt, lastID, limit, search, filter, nil)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())

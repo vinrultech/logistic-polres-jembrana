@@ -5,8 +5,8 @@ export default {
     all_items: (state) => {
         return state.all_items;
     },
-    item: (state) => (id) => {
-        return state.items.find(item => item.id === id);
+    item: (state) => (row_id) => {
+        return state.items.find(item => item.row_id === row_id);
     },
     find_all_item: (state) => (id) => {
         return state.all_items.find(item => item.id === id);

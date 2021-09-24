@@ -4,8 +4,8 @@ import _ from 'lodash';
 
 export default {
     fetch: injector.encase(['axios'], (axios) => (context, payload) => {
-        const id = payload.id;
-        axios.get(`/admin/metric/${id}`)
+        const row_id = payload.row_id;
+        axios.get(`/admin/barang/${row_id}`)
             .then((response) => {
                 const item = response.data;
                 context.commit('ITEM', item);
@@ -13,7 +13,7 @@ export default {
     }),
     gets: injector.encase(['axios', 'toastr'], (axios, toastr) => (context, payload) => {
         let q = `limit=${payload.limit}&last_id=${payload.last_id}`
-        axios.get(`/admin/metric?${q}`)
+        axios.get(`/admin/barang?${q}`)
             .then((response) => {
                 const items = response.data;
                 if (items.length > 0) {
@@ -32,7 +32,7 @@ export default {
     }),
     all: injector.encase(['axios'], (axios) => (context) => {
         return new Promise((resolve) => {
-            axios.get(`/admin/metric/all`)
+            axios.get(`/admin/barang/all`)
             .then((response) => {
                 const items = response.data;
                 context.commit('ALL', items);
@@ -43,7 +43,7 @@ export default {
     }),
     search: injector.encase(['axios', 'toastr'], (axios, toastr) => (context, payload) => {
         let q = `limit=${payload.limit}&last_id=${payload.last_id}&search=${payload.search}&filter=${payload.filter}`;
-        axios.get(`/admin/metric/search?${q}`)
+        axios.get(`/admin/barang/search?${q}`)
             .then((response) => {
                 const items = response.data;
                 context.commit('SEARCH', {
@@ -68,11 +68,11 @@ export default {
         context.dispatch('constant/remove_error', {}, {
             root: true
         })
-        axios.post(`/admin/metric/create`, item, {
-                message: "Satuan Metrik berhasil di tambah"
+        axios.post(`/admin/barang/create`, item, {
+                message: "Barang berhasil di tambah"
             })
             .then(() => {
-                router.push("/admin/metric")
+                router.push("/admin/barang")
             }).catch((error) => {
                 const data = error.response.data;
                 context.dispatch('constant/error', data.message, {
@@ -80,10 +80,10 @@ export default {
                 })
             })
     }),
-    remove: injector.encase(['axios'], (axios) => (_, id) => {
+    remove: injector.encase(['axios'], (axios) => (_, row_id) => {
         return new Promise((resolve) => {
-            axios.delete(`/admin/metric/remove/${id}`, {
-                    message: "Satuan Metrik berhasil di hapus"
+            axios.delete(`/admin/barang/remove/${row_id}`, {
+                    message: "Barang berhasil di hapus"
                 })
                 .then(() => {
                     resolve(true);
@@ -91,13 +91,13 @@ export default {
         });
     }),
     update: injector.encase(['axios', 'router'], (axios, router) => (context, payload) => {
-        const id = payload.id;
+        const row_id = payload.row_id;
         const item = payload.item;
-        axios.put(`/admin/metric/update/${id}`, item, {
-                message: "Satuan Metrik berhasil di update"
+        axios.put(`/admin/barang/update/${row_id}`, item, {
+                message: "Barang berhasil di update"
             })
             .then(() => {
-                router.push("/admin/metric")
+                router.push("/admin/barang")
             }).catch((error) => {
                 const data = error.response.data;
                 context.dispatch('constant/error', data.message, {

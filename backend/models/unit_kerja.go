@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/constants"
@@ -159,10 +158,10 @@ func (m *Model) GetUnitKerja(lastID int64, limit int) ([]UnitKerja, error) {
 
 	items := []UnitKerja{}
 
-	sqlX := db.QueryPaging(tableUnitKerja, "id", false, getSelectUnitKerja())
+	sqlX := db.QueryPagingJoin(tableUnitKerja, "id", false, getSelectUnitKerja(), []db.Join{}, []string{})
 
 	if lastID == 0 {
-		sqlX = db.QueryPaging(tableUnitKerja, "id", true, getSelectUnitKerja())
+		sqlX = db.QueryPagingJoin(tableUnitKerja, "id", true, getSelectUnitKerja(), []db.Join{}, []string{})
 	}
 
 	sqlX = m.Db.Rebind(sqlX)
@@ -176,13 +175,7 @@ func (m *Model) GetUnitKerja(lastID int64, limit int) ([]UnitKerja, error) {
 
 	defer stmt.Close()
 
-	var rows *sql.Rows
-
-	if lastID == 0 {
-		rows, err = stmt.Query(limit)
-	} else {
-		rows, err = stmt.Query(lastID, limit)
-	}
+	rows, err := GetQueryRow(stmt, lastID, limit, "", "", nil)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
@@ -237,13 +230,11 @@ func (m *Model) SearchUnitKerja(lastID int64, limit int, search string, filter s
 
 	items := []UnitKerja{}
 
-	sqlX := db.QueryPagingSearch(tableUnitKerja, "id", false, filter, getSelectUnitKerja())
+	sqlX := db.QueryPagingJoinSearch(tableUnitKerja, "id", false, getSelectUnitKerja(), []db.Join{}, filter, []string{})
 
 	if lastID == 0 {
-		sqlX = db.QueryPagingSearch(tableUnitKerja, "id", true, filter, getSelectUnitKerja())
+		sqlX = db.QueryPagingJoinSearch(tableUnitKerja, "id", true, getSelectUnitKerja(), []db.Join{}, filter, []string{})
 	}
-
-	fmt.Println(sqlX)
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -256,12 +247,11 @@ func (m *Model) SearchUnitKerja(lastID int64, limit int, search string, filter s
 
 	defer stmt.Close()
 
-	var rows *sql.Rows
+	rows, err := GetQueryRow(stmt, lastID, limit, search, filter, nil)
 
-	if lastID == 0 {
-		rows, err = stmt.Query(search, limit)
-	} else {
-		rows, err = stmt.Query(lastID, search, limit)
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
 	}
 
 	if err != nil {

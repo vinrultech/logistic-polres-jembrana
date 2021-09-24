@@ -30,10 +30,6 @@ func getSelectSuratKeluar() []string {
 	return []string{"id", "row_id", "no_surat", "tanggal_surat", "tujuan", "perihal", "isi", "unit_kerja_id", "created_at", "updated_at"}
 }
 
-func getValuesSuratKeluar() string {
-	return db.Select(getSelectSuratKeluar())
-}
-
 func getRowSuratKeluar(values []interface{}, m *Model) (SuratKeluar, error) {
 	item := SuratKeluar{}
 	var unitKerjaID int64
@@ -352,32 +348,14 @@ func (m *Model) FetchSuratKeluar(rowID string) (SuratKeluar, error) {
 	return item, nil
 }
 
-func (m *Model) GetSuratKeluar(lastID int64, limit int, params ...string) ([]SuratKeluar, error) {
+func (m *Model) GetSuratKeluar(lastID int64, limit int, filters []string, filterValues []interface{}) ([]SuratKeluar, error) {
 
 	items := []SuratKeluar{}
 
-	var startDate string
-	var endDate string
-
-	if len(params) > 0 {
-		startDate = params[0]
-		endDate = params[1]
-	}
-
-	sqlX := db.QueryPagingSurat(tableSuratKeluar, getValuesSuratKeluar(), false, "id")
-
-	if len(params) > 0 {
-		sqlX = db.QueryPagingSurat(tableSuratKeluar, getValuesSuratKeluar(), false, "id", "tanggal_surat")
-
-	}
+	sqlX := db.QueryPagingJoin(tableSuratKeluar, "id", false, getSelectSuratKeluar(), []db.Join{}, filters)
 
 	if lastID == 0 {
-
-		sqlX = db.QueryPagingSurat(tableSuratKeluar, getValuesSuratKeluar(), true, "id")
-		if len(params) > 0 {
-
-			sqlX = db.QueryPagingSurat(tableSuratKeluar, getValuesSuratKeluar(), true, "id", "tanggal_surat")
-		}
+		sqlX = db.QueryPagingJoin(tableSuratKeluar, "id", true, getSelectSuratKeluar(), []db.Join{}, filters)
 	}
 
 	sqlX = m.Db.Rebind(sqlX)
@@ -391,23 +369,7 @@ func (m *Model) GetSuratKeluar(lastID int64, limit int, params ...string) ([]Sur
 
 	defer stmt.Close()
 
-	var rows *sql.Rows
-
-	if lastID == 0 {
-
-		if len(params) > 0 {
-			rows, err = stmt.Query(startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(limit)
-		}
-	} else {
-
-		if len(params) > 0 {
-			rows, err = stmt.Query(lastID, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(lastID, limit)
-		}
-	}
+	rows, err := GetQueryRow(stmt, lastID, limit, "", "", filterValues)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
@@ -423,32 +385,14 @@ func (m *Model) GetSuratKeluar(lastID int64, limit int, params ...string) ([]Sur
 	return items, nil
 }
 
-func (m *Model) GetSuratKeluarWithFilter(lastID int64, limit int, unitKerjaID int64, params ...string) ([]SuratKeluar, error) {
+func (m *Model) SearchSuratKeluar(lastID int64, limit int, search []string, filters []string, filterValues []interface{}) ([]SuratKeluar, error) {
 
 	items := []SuratKeluar{}
 
-	var startDate string
-	var endDate string
-
-	if len(params) > 0 {
-		startDate = params[0]
-		endDate = params[1]
-	}
-
-	sqlX := db.QueryPagingSuratWithFilter(tableSuratKeluar, getValuesSuratKeluar(), false, "id", "unit_kerja_id=?")
-
-	if len(params) > 0 {
-		sqlX = db.QueryPagingSuratWithFilter(tableSuratKeluar, getValuesSuratKeluar(), false, "id", "unit_kerja_id=?", "tanggal_surat")
-
-	}
+	sqlX := db.QueryPagingJoinSearch(tableSuratKeluar, "id", false, getSelectSuratKeluar(), []db.Join{}, search[0], filters)
 
 	if lastID == 0 {
-
-		sqlX = db.QueryPagingSuratWithFilter(tableSuratKeluar, getValuesSuratKeluar(), true, "id", "unit_kerja_id=?")
-		if len(params) > 0 {
-
-			sqlX = db.QueryPagingSuratWithFilter(tableSuratKeluar, getValuesSuratKeluar(), true, "id", "unit_kerja_id=?", "tanggal_surat")
-		}
+		sqlX = db.QueryPagingJoinSearch(tableSuratKeluar, "id", true, getSelectSuratKeluar(), []db.Join{}, search[0], filters)
 	}
 
 	sqlX = m.Db.Rebind(sqlX)
@@ -462,160 +406,11 @@ func (m *Model) GetSuratKeluarWithFilter(lastID int64, limit int, unitKerjaID in
 
 	defer stmt.Close()
 
-	var rows *sql.Rows
-
-	if lastID == 0 {
-
-		if len(params) > 0 {
-			rows, err = stmt.Query(unitKerjaID, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(unitKerjaID, limit)
-		}
-	} else {
-
-		if len(params) > 0 {
-			rows, err = stmt.Query(unitKerjaID, lastID, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(unitKerjaID, lastID, limit)
-		}
-	}
+	rows, err := GetQueryRow(stmt, lastID, limit, search[1], search[0], filterValues)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
 		return items, err
-	}
-
-	items, err = getRowsSuratKeluar(rows, m)
-
-	if err != nil {
-		return items, err
-	}
-
-	return items, nil
-}
-
-func (m *Model) SearchSuratKeluar(lastID int64, limit int, search string, filter string, params ...string) ([]SuratKeluar, error) {
-
-	items := []SuratKeluar{}
-
-	var startDate string
-	var endDate string
-
-	if len(params) > 0 {
-		startDate = params[0]
-		endDate = params[1]
-	}
-
-	sqlX := db.QueryPagingSuratSearch(tableSuratKeluar, getValuesSuratKeluar(), false, "id", filter)
-
-	if len(params) > 0 {
-		sqlX = db.QueryPagingSuratSearch(tableSuratKeluar, getValuesSuratKeluar(), false, "id", filter, "tanggal_surat")
-	}
-
-	if lastID == 0 {
-		sqlX = db.QueryPagingSuratSearch(tableSuratKeluar, getValuesSuratKeluar(), true, "id", filter)
-
-		if len(params) > 0 {
-			sqlX = db.QueryPagingSuratSearch(tableSuratKeluar, getValuesSuratKeluar(), true, "id", filter, "tanggal_surat")
-		}
-	}
-
-	sqlX = m.Db.Rebind(sqlX)
-
-	stmt, err := m.Db.Preparex(sqlX)
-
-	if err != nil {
-		loggers.Log.Errorln(err.Error())
-		return items, err
-	}
-
-	defer stmt.Close()
-
-	var rows *sql.Rows
-
-	if lastID == 0 {
-		if len(params) > 0 {
-			rows, err = stmt.Query(search, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(search, limit)
-		}
-
-	} else {
-		if len(params) > 0 {
-			rows, err = stmt.Query(search, lastID, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(search, lastID, limit)
-		}
-
-	}
-
-	if err != nil {
-		loggers.Log.Errorln(err.Error())
-		return items, err
-	}
-
-	items, err = getRowsSuratKeluar(rows, m)
-
-	if err != nil {
-		return items, err
-	}
-
-	return items, nil
-}
-
-func (m *Model) SearchSuratKeluarWithFilter(lastID int64, limit int, search string, filter string, unitKerjaID int64, params ...string) ([]SuratKeluar, error) {
-
-	items := []SuratKeluar{}
-
-	var startDate string
-	var endDate string
-
-	if len(params) > 0 {
-		startDate = params[0]
-		endDate = params[1]
-	}
-
-	sqlX := db.QueryPagingSuratSearchWithFilter(tableSuratKeluar, getValuesSuratKeluar(), false, "id", filter, "unit_kerja_id=?")
-
-	if len(params) > 0 {
-		sqlX = db.QueryPagingSuratSearchWithFilter(tableSuratKeluar, getValuesSuratKeluar(), false, "id", filter, "unit_kerja_id=?", "tanggal_surat")
-	}
-
-	if lastID == 0 {
-		sqlX = db.QueryPagingSuratSearchWithFilter(tableSuratKeluar, getValuesSuratKeluar(), true, "id", filter, "unit_kerja_id=?")
-
-		if len(params) > 0 {
-			sqlX = db.QueryPagingSuratSearchWithFilter(tableSuratKeluar, getValuesSuratKeluar(), true, "id", filter, "unit_kerja_id=?", "tanggal_surat")
-		}
-	}
-
-	sqlX = m.Db.Rebind(sqlX)
-
-	stmt, err := m.Db.Preparex(sqlX)
-
-	if err != nil {
-		loggers.Log.Errorln(err.Error())
-		return items, err
-	}
-
-	defer stmt.Close()
-
-	var rows *sql.Rows
-
-	if lastID == 0 {
-		if len(params) > 0 {
-			rows, err = stmt.Query(search, unitKerjaID, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(search, unitKerjaID, limit)
-		}
-
-	} else {
-		if len(params) > 0 {
-			rows, err = stmt.Query(search, unitKerjaID, lastID, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(search, unitKerjaID, lastID, limit)
-		}
-
 	}
 
 	if err != nil {

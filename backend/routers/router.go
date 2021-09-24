@@ -41,6 +41,7 @@ func SetupRouters(e *echo.Echo, app *controllers.App) {
 	admin.PUT("/kategori/update/:id", app.UpdateKategori)
 	admin.GET("/kategori", app.GetKategori)
 	admin.GET("/kategori/search", app.SearchKategori)
+	admin.GET("/kategori/all", app.AllKategori)
 	admin.DELETE("/kategori/remove/:id", app.RemoveKategori)
 
 	//files
@@ -71,6 +72,14 @@ func SetupRouters(e *echo.Echo, app *controllers.App) {
 	admin.GET("/juknis/search", app.SearchJuknis)
 	admin.DELETE("/juknis/remove/:row_id", app.RemoveJuknis)
 
+	//barang
+	admin.POST("/barang/create", app.CreateBarang)
+	admin.PUT("/barang/update/:row_id", app.UpdateBarang)
+	admin.GET("/barang", app.GetBarang)
+	admin.GET("/barang/:row_id", app.FetchBarang)
+	admin.GET("/barang/search", app.SearchBarang)
+	admin.DELETE("/barang/remove/:row_id", app.RemoveBarang)
+
 	//unit_kerja
 	admin.POST("/unit_kerja/create", app.CreateUnitKerja)
 	admin.PUT("/unit_kerja/update/:id", app.UpdateUnitKerja)
@@ -79,11 +88,11 @@ func SetupRouters(e *echo.Echo, app *controllers.App) {
 	admin.GET("/unit_kerja/search", app.SearchUnitKerja)
 	admin.DELETE("/unit_kerja/remove/:id", app.RemoveUnitKerja)
 
-	//kategori
+	//metric
 	admin.POST("/metric/create", app.CreateMetric)
 	admin.PUT("/metric/update/:id", app.UpdateMetric)
 	admin.GET("/metric", app.GetMetric)
 	admin.GET("/metric/search", app.SearchMetric)
-	admin.GET("/metric/all", app.AllUnitKerja)
+	admin.GET("/metric/all", app.AllMetric)
 	admin.DELETE("/metric/remove/:id", app.RemoveMetric)
 }

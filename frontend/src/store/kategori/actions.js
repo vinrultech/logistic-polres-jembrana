@@ -53,6 +53,17 @@ export default {
                 }
             })
     }),
+    all: injector.encase(['axios'], (axios) => (context) => {
+        return new Promise((resolve) => {
+            axios.get(`/admin/kategori/all`)
+            .then((response) => {
+                const items = response.data;
+                context.commit('ALL', items);
+                resolve(true)
+            })
+        })
+        
+    }),
     create: injector.encase(['axios', 'router'], (axios, router) => (context, item) => {
         context.dispatch('constant/remove_error', {}, {
             root: true

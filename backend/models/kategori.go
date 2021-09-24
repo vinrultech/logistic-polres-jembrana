@@ -153,15 +153,11 @@ func (m *Model) FetchKategori(id int64) (Kategori, error) {
 	return item, nil
 }
 
-func (m *Model) GetKategori(lastID int64, limit int) ([]Kategori, error) {
+func (m *Model) AllKategori() ([]Kategori, error) {
 
 	items := []Kategori{}
 
-	sqlX := db.QueryPaging(tableKategori, "id", false, getSelectKategori())
-
-	if lastID == 0 {
-		sqlX = db.QueryPaging(tableKategori, "id", true, getSelectKategori())
-	}
+	sqlX := db.QueryAll(tableKategori, getSelectKategori())
 
 	sqlX = m.Db.Rebind(sqlX)
 
@@ -174,13 +170,44 @@ func (m *Model) GetKategori(lastID int64, limit int) ([]Kategori, error) {
 
 	defer stmt.Close()
 
-	var rows *sql.Rows
+	rows, err := stmt.Query()
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
+	}
+
+	items, err = getRowsKategori(rows, m)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
+	}
+
+	return items, nil
+}
+
+func (m *Model) GetKategori(lastID int64, limit int) ([]Kategori, error) {
+
+	items := []Kategori{}
+
+	sqlX := db.QueryPagingJoin(tableKategori, "id", false, getSelectKategori(), []db.Join{}, []string{})
 
 	if lastID == 0 {
-		rows, err = stmt.Query(limit)
-	} else {
-		rows, err = stmt.Query(lastID, limit)
+		sqlX = db.QueryPagingJoin(tableKategori, "id", true, getSelectKategori(), []db.Join{}, []string{})
 	}
+	sqlX = m.Db.Rebind(sqlX)
+
+	stmt, err := m.Db.Preparex(sqlX)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
+	}
+
+	defer stmt.Close()
+
+	rows, err := GetQueryRow(stmt, lastID, limit, "", "", nil)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
@@ -201,10 +228,10 @@ func (m *Model) SearchKategori(lastID int64, limit int, search string, filter st
 
 	items := []Kategori{}
 
-	sqlX := db.QueryPagingSearch(tableKategori, "id", false, filter, getSelectKategori())
+	sqlX := db.QueryPagingJoinSearch(tableKategori, "id", false, getSelectKategori(), []db.Join{}, filter, []string{})
 
 	if lastID == 0 {
-		sqlX = db.QueryPagingSearch(tableKategori, "id", true, filter, getSelectKategori())
+		sqlX = db.QueryPagingJoinSearch(tableKategori, "id", true, getSelectKategori(), []db.Join{}, filter, []string{})
 	}
 
 	sqlX = m.Db.Rebind(sqlX)
@@ -218,13 +245,7 @@ func (m *Model) SearchKategori(lastID int64, limit int, search string, filter st
 
 	defer stmt.Close()
 
-	var rows *sql.Rows
-
-	if lastID == 0 {
-		rows, err = stmt.Query(search, limit)
-	} else {
-		rows, err = stmt.Query(lastID, search, limit)
-	}
+	rows, err := GetQueryRow(stmt, lastID, limit, search, filter, nil)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())

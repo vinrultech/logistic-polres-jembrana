@@ -82,23 +82,23 @@ func (a *App) GetJuknis(c echo.Context) error {
 	startDate := c.QueryParam("start")
 	endDate := c.QueryParam("end")
 
-	var items []models.Juknis
+	var filterValues []interface{}
+	var filters []string
+
+	//var items []models.SuratMasuk
+
+	if claims.UnitKerjaID != 0 {
+		filters = append(filters, " unit_kerja_id=? ")
+		filterValues = append(filterValues, int64(claims.UnitKerjaID))
+	}
 
 	if startDate != "" && endDate != "" {
-		if claims.UnitKerjaID == 0 {
-			items, err = a.M.GetJuknis(int64(lastID), limit, startDate, endDate)
-		} else {
-			items, err = a.M.GetJuknisWithFilter(int64(lastID), limit, int64(claims.UnitKerjaID), startDate, endDate)
-		}
-
-	} else {
-		if claims.UnitKerjaID == 0 {
-			items, err = a.M.GetJuknis(int64(lastID), limit)
-		} else {
-			items, err = a.M.GetJuknisWithFilter(int64(lastID), limit, int64(claims.UnitKerjaID))
-		}
-
+		filters = append(filters, " (tanggal_surat BETWEEN ? AND ?) ")
+		filterValues = append(filterValues, startDate)
+		filterValues = append(filterValues, endDate)
 	}
+
+	items, err := a.M.GetJuknis(int64(lastID), limit, filters, filterValues)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
@@ -135,25 +135,21 @@ func (a *App) SearchJuknis(c echo.Context) error {
 	startDate := c.QueryParam("start")
 	endDate := c.QueryParam("end")
 
-	var items []models.Juknis
+	var filterValues []interface{}
+	var filters []string
+
+	if claims.UnitKerjaID != 0 {
+		filters = append(filters, " unit_kerja_id=? ")
+		filterValues = append(filterValues, int64(claims.UnitKerjaID))
+	}
 
 	if startDate != "" && endDate != "" {
-		if claims.UnitKerjaID == 0 {
-			items, err = a.M.SearchJuknis(int64(lastID), limit, search, filter, startDate, endDate)
-		} else {
-			items, err = a.M.SearchJuknisWithFilter(int64(lastID), limit, search, filter,
-				int64(claims.UnitKerjaID), startDate, endDate)
-		}
-
-	} else {
-		if claims.UnitKerjaID == 0 {
-			items, err = a.M.SearchJuknis(int64(lastID), limit, search, filter)
-		} else {
-			items, err = a.M.SearchJuknisWithFilter(int64(lastID), limit, search, filter,
-				int64(claims.UnitKerjaID))
-		}
-
+		filters = append(filters, " (tanggal_surat BETWEEN ? AND ?) ")
+		filterValues = append(filterValues, startDate)
+		filterValues = append(filterValues, endDate)
 	}
+
+	items, err := a.M.SearchJuknis(int64(lastID), limit, []string{filter, search}, filters, filterValues)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())

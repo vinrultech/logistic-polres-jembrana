@@ -209,3 +209,15 @@ func (a *App) SearchKategori(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, items)
 }
+
+func (a *App) AllKategori(c echo.Context) error {
+
+	items, err := a.M.AllKategori()
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error all Kategori : %v", err))
+	}
+
+	return c.JSON(http.StatusOK, items)
+}

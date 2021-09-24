@@ -250,7 +250,7 @@ export default {
       {
         icon: "fas fa-shopping-basket",
         text: "Barang",
-        href: "/admin/inventory",
+        href: "/admin/barang",
         size: 16,
         role : ["superuser", "unit_kerja"]
       },

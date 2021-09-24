@@ -13,6 +13,12 @@ const (
 	TableUsers = "log_users"
 )
 
+type Join struct {
+	TableJoin   string
+	IDTable     string
+	IDTableJoin string
+}
+
 //InitDb -> fungsi untuk koneksi ke database
 func InitDb(config *viper.Viper) *sqlx.DB {
 
@@ -102,6 +108,21 @@ func Fetch(table string, field string, params []string) string {
 	return fmt.Sprintf(`SELECT %s FROM %s %s`, values, table, Where(field))
 }
 
+func FetchJoin(table string, field string, params []string, joins []Join) string {
+
+	values := Select(params)
+
+	q := QuerySelect(table, values)
+
+	for _, j := range joins {
+		q += LeftJoin(j.TableJoin, j.IDTable, j.IDTableJoin)
+	}
+
+	q += Where(field)
+
+	return q
+}
+
 func QueryAllWhere(table string, field string, params []string) string {
 
 	values := Select(params)
@@ -121,120 +142,83 @@ func QueryAllWhereOrderBy(table string, fieldWhere string, fieldOrder string, or
 	return fmt.Sprintf(`SELECT %s FROM %s %s %s`, values, table, Where(fieldWhere), OrderBy(fieldOrder, order))
 }
 
-func QueryPagingSurat(table string, values string, first bool, field string, params ...string) string {
-	q := "SELECT %s FROM %s"
-	q = fmt.Sprintf(q, values, table)
+func QuerySelect(table string, values string) string {
+	return fmt.Sprintf(`SELECT %s FROM %s`, values, table)
+}
 
-	if !first {
-		q += WhereLess(field)
-	}
+func LeftJoin(tableJoin string, idTable string, idTableJoin string) string {
+	return fmt.Sprintf(" LEFT JOIN %s ON %s=%s ", tableJoin, idTable, idTableJoin)
+}
 
-	if len(params) > 0 {
-		if !first {
-			q += WhereBetweenAnd(params[0])
+func GetFilter(filters []string, where bool) string {
+	q := ""
+
+	if len(filters) > 0 {
+		if where {
+			q += " WHERE "
 		} else {
-			q += WhereBetween(params[0])
+			q += " AND "
+		}
+		for i, filter := range filters {
+			q += filter
+			if i != len(filters)-1 {
+				q += " AND "
+			}
 		}
 	}
 
-	q += OrderByLimit(field, "DESC")
-
 	return q
 }
 
-func QueryPagingSuratWithFilter(table string, values string, first bool, field string, filter string, params ...string) string {
-	q := "SELECT %s FROM %s WHERE %s"
-	q = fmt.Sprintf(q, values, table, filter)
+func QueryPagingJoin(table string, field string, isFirst bool, selects []string, joins []Join, filters []string) string {
+	values := Select(selects)
 
-	if !first {
-		q += WhereLessAnd(field)
+	q := QuerySelect(table, values)
+
+	if len(joins) > 0 {
+		for _, j := range joins {
+			q += LeftJoin(j.TableJoin, j.IDTable, j.IDTableJoin)
+		}
 	}
-
-	if len(params) > 0 {
-		q += WhereBetweenAnd(params[0])
-	}
-
-	q += OrderByLimit(field, "DESC")
-
-	return q
-}
-
-func QueryPagingSuratSearch(table string, values string, first bool, field string, search string, params ...string) string {
-	s := `ILIKE '%' || ? || '%'`
-	q := "SELECT %s FROM %s WHERE %s %s"
-	q = fmt.Sprintf(q, values, table, search, s)
-
-	if !first {
-		q += WhereLessAnd(field)
-	}
-
-	if len(params) > 0 {
-		q += WhereBetweenAnd(params[0])
-	}
-
-	q += OrderByLimit(field, "DESC")
-
-	return q
-}
-
-func QueryPagingSuratSearchWithFilter(table string, values string, first bool, field string, search string, filter string, params ...string) string {
-
-	s := `ILIKE '%' || ? || '%'`
-	q := "SELECT %s FROM %s WHERE %s %s AND %s"
-	q = fmt.Sprintf(q, values, table, search, s, filter)
-
-	if !first {
-		q += WhereLessAnd(field)
-	}
-
-	if len(params) > 0 {
-		q += WhereBetweenAnd(params[0])
-	}
-
-	q += OrderByLimit(field, "DESC")
-
-	return q
-}
-
-func QueryPaging(table string, field string, isFirst bool, params []string) string {
-	values := Select(params)
 
 	if isFirst {
-		return QueryPagingFirst(table, field, values)
+		q += GetFilter(filters, true)
+		q += OrderByLimit(field, "DESC")
 	} else {
-		return QueryPagingLess(table, field, values)
+		q += WhereLess(field)
+		q += GetFilter(filters, false)
+		q += OrderByLimit(field, "DESC")
 	}
+
+	return q
 
 }
 
-func QueryPagingSearch(table string, field string, isFirst bool, search string, params []string) string {
-	values := Select(params)
+func QueryPagingJoinSearch(table string, field string, isFirst bool, selects []string, joins []Join, search string, filters []string) string {
+	values := Select(selects)
+
+	q := QuerySelect(table, values)
+	if len(joins) > 0 {
+		for _, j := range joins {
+			q += LeftJoin(j.TableJoin, j.IDTable, j.IDTableJoin)
+		}
+	}
+
+	qs := `ILIKE '%' || ? || '%'`
+
+	q = fmt.Sprintf(`%s WHERE %s %s`, q, search, qs)
 
 	if isFirst {
-		return QueryPagingFirstSearch(table, field, values, search)
+		q += GetFilter(filters, false)
+		q += OrderByLimit(field, "DESC")
 	} else {
-		return QueryPagingLessSearch(table, field, values, search)
+		q += WhereLessAnd(field)
+		q += GetFilter(filters, false)
+		q += OrderByLimit(field, "DESC")
 	}
 
-}
+	return q
 
-func QueryPagingLess(table string, field string, values string) string {
-
-	return fmt.Sprintf(`SELECT %s FROM %s %s %s`, values, table, WhereLess(field), OrderByLimit(field, "DESC"))
-}
-
-func QueryPagingFirst(table string, field string, values string) string {
-	return fmt.Sprintf(`SELECT %s FROM %s %s`, values, table, OrderByLimit(field, "DESC"))
-}
-
-func QueryPagingLessSearch(table string, field string, values string, search string) string {
-	s := `ILIKE '%' || ? || '%'`
-	return fmt.Sprintf(`SELECT %s FROM %s %s AND %s %s %s`, values, table, WhereLess(field), search, s, OrderByLimit(field, "DESC"))
-}
-
-func QueryPagingFirstSearch(table string, field string, values string, search string) string {
-	s := `ILIKE '%' || ? || '%'`
-	return fmt.Sprintf(`SELECT %s FROM %s WHERE %s %s %s`, values, table, search, s, OrderByLimit(field, "DESC"))
 }
 
 func Filter(field string) string {
@@ -291,4 +275,8 @@ func WhereBetween(field string) string {
 
 func WhereBetweenAnd(field string) string {
 	return fmt.Sprintf(" AND (%s BETWEEN ? AND ?)", field)
+}
+
+func And() string {
+	return " AND "
 }

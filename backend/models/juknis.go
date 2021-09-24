@@ -30,10 +30,6 @@ func getSelectJuknis() []string {
 		"perihal", "isi", "unit_kerja_id", "created_at", "updated_at"}
 }
 
-func getValuesJuknis() string {
-	return db.Select(getSelectJuknis())
-}
-
 func getRowJuknis(values []interface{}, m *Model) (Juknis, error) {
 	item := Juknis{}
 	var unitKerjaID int64
@@ -351,32 +347,14 @@ func (m *Model) FetchJuknis(rowID string) (Juknis, error) {
 	return item, nil
 }
 
-func (m *Model) GetJuknis(lastID int64, limit int, params ...string) ([]Juknis, error) {
+func (m *Model) GetJuknis(lastID int64, limit int, filters []string, filterValues []interface{}) ([]Juknis, error) {
 
 	items := []Juknis{}
 
-	var startDate string
-	var endDate string
-
-	if len(params) > 0 {
-		startDate = params[0]
-		endDate = params[1]
-	}
-
-	sqlX := db.QueryPagingSurat(tableJuknis, getValuesJuknis(), false, "id")
-
-	if len(params) > 0 {
-		sqlX = db.QueryPagingSurat(tableJuknis, getValuesJuknis(), false, "id", "tanggal_surat")
-
-	}
+	sqlX := db.QueryPagingJoin(tableJuknis, "id", false, getSelectJuknis(), []db.Join{}, filters)
 
 	if lastID == 0 {
-
-		sqlX = db.QueryPagingSurat(tableJuknis, getValuesJuknis(), true, "id")
-		if len(params) > 0 {
-
-			sqlX = db.QueryPagingSurat(tableJuknis, getValuesJuknis(), true, "id", "tanggal_surat")
-		}
+		sqlX = db.QueryPagingJoin(tableJuknis, "id", true, getSelectJuknis(), []db.Join{}, filters)
 	}
 
 	sqlX = m.Db.Rebind(sqlX)
@@ -390,23 +368,7 @@ func (m *Model) GetJuknis(lastID int64, limit int, params ...string) ([]Juknis, 
 
 	defer stmt.Close()
 
-	var rows *sql.Rows
-
-	if lastID == 0 {
-
-		if len(params) > 0 {
-			rows, err = stmt.Query(startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(limit)
-		}
-	} else {
-
-		if len(params) > 0 {
-			rows, err = stmt.Query(lastID, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(lastID, limit)
-		}
-	}
+	rows, err := GetQueryRow(stmt, lastID, limit, "", "", filterValues)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
@@ -422,32 +384,14 @@ func (m *Model) GetJuknis(lastID int64, limit int, params ...string) ([]Juknis, 
 	return items, nil
 }
 
-func (m *Model) GetJuknisWithFilter(lastID int64, limit int, unitKerjaID int64, params ...string) ([]Juknis, error) {
+func (m *Model) SearchJuknis(lastID int64, limit int, search []string, filters []string, filterValues []interface{}) ([]Juknis, error) {
 
 	items := []Juknis{}
 
-	var startDate string
-	var endDate string
-
-	if len(params) > 0 {
-		startDate = params[0]
-		endDate = params[1]
-	}
-
-	sqlX := db.QueryPagingSuratWithFilter(tableJuknis, getValuesJuknis(), false, "id", "unit_kerja_id=?")
-
-	if len(params) > 0 {
-		sqlX = db.QueryPagingSuratWithFilter(tableJuknis, getValuesJuknis(), false, "id", "unit_kerja_id=?", "tanggal_surat")
-
-	}
+	sqlX := db.QueryPagingJoinSearch(tableJuknis, "id", false, getSelectJuknis(), []db.Join{}, search[0], filters)
 
 	if lastID == 0 {
-
-		sqlX = db.QueryPagingSuratWithFilter(tableJuknis, getValuesJuknis(), true, "id", "unit_kerja_id=?")
-		if len(params) > 0 {
-
-			sqlX = db.QueryPagingSuratWithFilter(tableJuknis, getValuesJuknis(), true, "id", "unit_kerja_id=?", "tanggal_surat")
-		}
+		sqlX = db.QueryPagingJoinSearch(tableJuknis, "id", true, getSelectJuknis(), []db.Join{}, search[0], filters)
 	}
 
 	sqlX = m.Db.Rebind(sqlX)
@@ -461,160 +405,11 @@ func (m *Model) GetJuknisWithFilter(lastID int64, limit int, unitKerjaID int64, 
 
 	defer stmt.Close()
 
-	var rows *sql.Rows
-
-	if lastID == 0 {
-
-		if len(params) > 0 {
-			rows, err = stmt.Query(unitKerjaID, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(unitKerjaID, limit)
-		}
-	} else {
-
-		if len(params) > 0 {
-			rows, err = stmt.Query(unitKerjaID, lastID, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(unitKerjaID, lastID, limit)
-		}
-	}
+	rows, err := GetQueryRow(stmt, lastID, limit, search[1], search[0], filterValues)
 
 	if err != nil {
 		loggers.Log.Errorln(err.Error())
 		return items, err
-	}
-
-	items, err = getRowsJuknis(rows, m)
-
-	if err != nil {
-		return items, err
-	}
-
-	return items, nil
-}
-
-func (m *Model) SearchJuknis(lastID int64, limit int, search string, filter string, params ...string) ([]Juknis, error) {
-
-	items := []Juknis{}
-
-	var startDate string
-	var endDate string
-
-	if len(params) > 0 {
-		startDate = params[0]
-		endDate = params[1]
-	}
-
-	sqlX := db.QueryPagingSuratSearch(tableJuknis, getValuesJuknis(), false, "id", filter)
-
-	if len(params) > 0 {
-		sqlX = db.QueryPagingSuratSearch(tableJuknis, getValuesJuknis(), false, "id", filter, "tanggal_surat")
-	}
-
-	if lastID == 0 {
-		sqlX = db.QueryPagingSuratSearch(tableJuknis, getValuesJuknis(), true, "id", filter)
-
-		if len(params) > 0 {
-			sqlX = db.QueryPagingSuratSearch(tableJuknis, getValuesJuknis(), true, "id", filter, "tanggal_surat")
-		}
-	}
-
-	sqlX = m.Db.Rebind(sqlX)
-
-	stmt, err := m.Db.Preparex(sqlX)
-
-	if err != nil {
-		loggers.Log.Errorln(err.Error())
-		return items, err
-	}
-
-	defer stmt.Close()
-
-	var rows *sql.Rows
-
-	if lastID == 0 {
-		if len(params) > 0 {
-			rows, err = stmt.Query(search, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(search, limit)
-		}
-
-	} else {
-		if len(params) > 0 {
-			rows, err = stmt.Query(search, lastID, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(search, lastID, limit)
-		}
-
-	}
-
-	if err != nil {
-		loggers.Log.Errorln(err.Error())
-		return items, err
-	}
-
-	items, err = getRowsJuknis(rows, m)
-
-	if err != nil {
-		return items, err
-	}
-
-	return items, nil
-}
-
-func (m *Model) SearchJuknisWithFilter(lastID int64, limit int, search string, filter string, unitKerjaID int64, params ...string) ([]Juknis, error) {
-
-	items := []Juknis{}
-
-	var startDate string
-	var endDate string
-
-	if len(params) > 0 {
-		startDate = params[0]
-		endDate = params[1]
-	}
-
-	sqlX := db.QueryPagingSuratSearchWithFilter(tableJuknis, getValuesJuknis(), false, "id", filter, "unit_kerja_id=?")
-
-	if len(params) > 0 {
-		sqlX = db.QueryPagingSuratSearchWithFilter(tableJuknis, getValuesJuknis(), false, "id", filter, "unit_kerja_id=?", "tanggal_surat")
-	}
-
-	if lastID == 0 {
-		sqlX = db.QueryPagingSuratSearchWithFilter(tableJuknis, getValuesJuknis(), true, "id", filter, "unit_kerja_id=?")
-
-		if len(params) > 0 {
-			sqlX = db.QueryPagingSuratSearchWithFilter(tableJuknis, getValuesJuknis(), true, "id", filter, "unit_kerja_id=?", "tanggal_surat")
-		}
-	}
-
-	sqlX = m.Db.Rebind(sqlX)
-
-	stmt, err := m.Db.Preparex(sqlX)
-
-	if err != nil {
-		loggers.Log.Errorln(err.Error())
-		return items, err
-	}
-
-	defer stmt.Close()
-
-	var rows *sql.Rows
-
-	if lastID == 0 {
-		if len(params) > 0 {
-			rows, err = stmt.Query(search, unitKerjaID, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(search, unitKerjaID, limit)
-		}
-
-	} else {
-		if len(params) > 0 {
-			rows, err = stmt.Query(search, unitKerjaID, lastID, startDate, endDate, limit)
-		} else {
-			rows, err = stmt.Query(search, unitKerjaID, lastID, limit)
-		}
-
 	}
 
 	if err != nil {

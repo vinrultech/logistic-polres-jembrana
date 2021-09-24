@@ -146,3 +146,29 @@ func getValuePtr(count int) ([]interface{}, []interface{}) {
 
 	return values, valuesPtrs
 }
+
+func GetQueryRow(stmt *sqlx.Stmt, lastId int64, limit int, search string, filter string, value []interface{}) (*sql.Rows, error) {
+
+	var q []interface{}
+
+	if filter != "" {
+		q = append(q, search)
+	}
+
+	if lastId != 0 {
+		q = append(q, lastId)
+	}
+
+	q = append(q, value...)
+
+	q = append(q, limit)
+
+	rows, err := stmt.Query(q...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rows, nil
+
+}

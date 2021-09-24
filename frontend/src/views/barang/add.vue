@@ -16,72 +16,67 @@
               <v-row>
                 <v-col cols="12" md="6" lg="6" xl="6" sm="12" xs="12">
                   <v-text-field
+                    v-model="kode"
+                    :rules="[(v) => !!v || 'Kode Barang dibutuhkan']"
+                    label="Kode Barang"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6" lg="6" xl="6" sm="12" xs="12">
+                  <v-text-field
                     v-model="nama"
                     :rules="[(v) => !!v || 'Nama dibutuhkan']"
                     label="Nama"
                     required
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" md="6" lg="6" xl="6" sm="12" xs="12">
-                  <v-text-field
-                    v-model="username"
-                    :rules="[(v) => !!v || 'Username dibutuhkan',
-                            (v) => !!/^[a-zA-Z0-9_]+$/.test(v) || 'Username harus huruf dan angka',]"
-                    label="Username"
-                    required
-                  ></v-text-field>
-                </v-col>
               </v-row>
-              <v-row>
-                <v-col cols="12" md="6" lg="6" xl="6" sm="12" xs="12">
-                  <v-text-field
-                    v-model="password"
-                    type="password"
-                    :rules="[(v) => !!v || 'Password dibutuhkan']"
-                    label="Password"
-                    required
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" md="6" lg="6" xl="6" sm="12" xs="12">
-                  <v-text-field
-                    v-model="confirm_password"
-                    type="password"
-                    :rules="[
-                      (v) => !!v || 'Konfirmasi password dibutuhkan',
-                      passwordConfirmationRule,
-                    ]"
-                    label="Konfirmasi Password"
-                    required
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              
+
               <v-row>
                 <v-col cols="12" md="6" lg="6" xl="6" sm="12" xs="12">
                   <v-select
-                    v-model="unit_kerja_id"
-                    :items="unit_kerjas"
+                    v-model="kategori_id"
+                    :items="kategoris"
                     menu-props="auto"
                     item-text="nama"
                     item-value="id"
-                    label="Unit Kerja"
+                    label="Kategori"
                     hide-details
-                    prepend-icon="fas fa-building"
+                    prepend-icon="fas fa-cookie-bite"
                     single-line
-                    :rules="[(v) => !!v || 'Unit Kerja dibutuhkan']"
+                    :rules="[(v) => !!v || 'Kategori dibutuhkan']"
                     required
                   ></v-select>
                 </v-col>
                 <v-col cols="12" md="6" lg="6" xl="6" sm="12" xs="12">
                   <v-text-field
-                    v-model="hp"
-                    :rules="[(v) => !!v || 'No WA dibutuhkan']"
-                    label="No WA"
+                    v-model="jumlah"
+                    :rules="[(v) => !!v || 'Jumlah dibutuhkan']"
+                    label="Jumlah"
+                    type="number"
                     required
                   ></v-text-field>
                 </v-col>
-                
               </v-row>
+
+              <v-row>
+                <v-col cols="12" md="6" lg="6" xl="6" sm="12" xs="12">
+                  <v-select
+                    v-model="metric_id"
+                    :items="metrics"
+                    menu-props="auto"
+                    item-text="nama"
+                    item-value="id"
+                    label="Satuan Metrik"
+                    hide-details
+                    prepend-icon="fas fa-sort-numeric-down"
+                    single-line
+                    :rules="[(v) => !!v || 'Satuan Metrik dibutuhkan']"
+                    required
+                  ></v-select>
+                </v-col>
+              </v-row>
+
               <v-btn color="error" class="mr-4" @click="batal">
                 <v-icon dark left>fas fa-arrow-left</v-icon>Batal
               </v-btn>
@@ -91,7 +86,7 @@
                 class="mr-4"
                 @click="simpan"
               >
-                <v-icon dark left>fas fa-save</v-icon>Simpan
+                <v-icon dark left>fas fa-save</v-icon>Create
               </v-btn>
             </v-form>
           </v-card-text>
@@ -102,35 +97,30 @@
 </template>
 
 <script>
-import CryptoJS from "crypto-js";
 import Breadcum from "../../components/breadcum";
-import { USER, ADD } from "../../breadcum";
+import { BARANG, ADD } from "../../breadcum";
 import utils from "../../utils";
 import { mapGetters } from "vuex";
 export default {
-  name: "create_user",
+  name: "create_metric",
   components: {
     Breadcum,
   },
   data: () => ({
-    breadcums: utils.breadcumTwo(USER(false), ADD),
+    breadcums: utils.breadcumTwo(BARANG(false), ADD),
     nama: null,
-    username: null,
-    password: null,
-    confirm_password: null,
-    hp: null,
-    unit_kerja_id: null,
+    kode: null,
+    jumlah: null,
+    kategori_id: null,
+    metric_id: null,
     valid: true,
   }),
   computed: {
     ...mapGetters({
-      unit_kerjas: "unit_kerja/all_items",
       errorMessage: "constant/errorMessage",
+      kategoris: "kategori/all_items",
+      metrics: "metric/all_items",
     }),
-    passwordConfirmationRule() {
-      return () =>
-        this.password === this.confirm_password || "Password tidak sama";
-    },
     error: {
       get() {
         return this.$store.getters["constant/error"];
@@ -142,25 +132,30 @@ export default {
   },
   mounted() {
     this.$store.dispatch("constant/set_error", false);
-    this.$store.dispatch("unit_kerja/all");
+    this.$store.dispatch("kategori/all");
+    this.$store.dispatch("metric/all");
   },
   methods: {
     simpan() {
       if (this.$refs.form.validate()) {
-        const unit_kerja = this.$store.getters["unit_kerja/find_all_item"](parseInt(this.unit_kerja_id));
-        this.$store.dispatch("user/create",{
-            username: this.username,
-            nama: this.nama,
-            hp: this.hp,
-            unit_kerja: unit_kerja,
-            role: "unit_kerja",
-            password: CryptoJS.MD5(this.password).toString(),
-          },);
+        const kategori = this.$store.getters["kategori/find_all_item"](
+          parseInt(this.kategori_id)
+        );
+        const metric = this.$store.getters["metric/find_all_item"](
+          parseInt(this.metric_id)
+        );
+        this.$store.dispatch("barang/create", {
+          nama: this.nama,
+          kode: this.kode,
+          jumlah: parseInt(this.jumlah),
+          kategori: kategori,
+          metric: metric,
+        });
       }
     },
     batal() {
-      this.$router.push("/admin/user");
-    }
+      this.$router.push("/admin/barang");
+    },
   },
 };
 </script>

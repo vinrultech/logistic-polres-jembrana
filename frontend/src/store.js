@@ -5,6 +5,7 @@ import user from './store/user'
 import kategori from './store/kategori'
 import unit_kerja from './store/unit_kerja'
 import metric from './store/metric'
+import barang from './store/barang'
 import files from './store/files'
 import inventory from './store/inventory'
 import inventory_masuk from './store/inventory_masuk'
@@ -32,6 +33,7 @@ export default new Vuex.Store({
         inventory_keluar,
         asset_tetap,
         metric,
+        barang,
         home,
         constant,
     }

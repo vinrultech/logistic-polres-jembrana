@@ -236,31 +236,31 @@ let router = new Router({
       component: () => import( /* webpackChunkName: "about" */ './views/juknis/info.vue'),
     },
     {
-      path: '/admin/inventory',
-      name: 'inventory',
+      path: '/admin/barang',
+      name: 'barang',
       meta: {
         requiresAuth: true,
         layout: 'admin'
       },
-      component: () => import( /* webpackChunkName: "about" */ './views/inventory/index.vue'),
+      component: () => import( /* webpackChunkName: "about" */ './views/barang/index.vue'),
     },
     {
-      path: '/admin/inventory/create',
-      name: 'create_inventory',
+      path: '/admin/barang/create',
+      name: 'create_barang',
       meta: {
         requiresAuth: true,
         layout: 'admin'
       },
-      component: () => import( /* webpackChunkName: "about" */ './views/inventory/add.vue'),
+      component: () => import( /* webpackChunkName: "about" */ './views/barang/add.vue'),
     },
     {
-      path: '/admin/inventory/edit/:id',
-      name: 'edit_inventory',
+      path: '/admin/barang/edit/:row_id',
+      name: 'edit_barang',
       meta: {
         requiresAuth: true,
         layout: 'admin'
       },
-      component: () => import( /* webpackChunkName: "about" */ './views/inventory/edit.vue'),
+      component: () => import( /* webpackChunkName: "about" */ './views/barang/edit.vue'),
     },
     {
       path: '/admin/asset_tetap',
