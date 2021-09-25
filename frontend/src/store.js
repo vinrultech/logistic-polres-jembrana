@@ -10,7 +10,7 @@ import files from './store/files'
 import inventory from './store/inventory'
 import inventory_masuk from './store/inventory_masuk'
 import inventory_keluar from './store/inventory_keluar'
-import asset_tetap from './store/asset_tetap'
+import aset_tetap from './store/aset_tetap'
 import surat_masuk from './store/surat_masuk'
 import surat_keluar from './store/surat_keluar'
 import juknis from './store/juknis'
@@ -31,7 +31,7 @@ export default new Vuex.Store({
         inventory,
         inventory_masuk,
         inventory_keluar,
-        asset_tetap,
+        aset_tetap,
         metric,
         barang,
         home,

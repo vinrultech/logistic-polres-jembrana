@@ -257,7 +257,7 @@ export default {
       {
         icon: "fas fa-warehouse",
         text: "Asset Tetap",
-        href: "/admin/asset_tetap",
+        href: "/admin/aset_tetap",
         size: 16,
         role : ["superuser", "unit_kerja"]
       },
@@ -338,9 +338,9 @@ export default {
       this.$store.dispatch("constant/menu", 5);
     } else if (routes[2] === "juknis") {
       this.$store.dispatch("constant/menu", 6);
-    } else if (routes[2] === "inventory") {
+    } else if (routes[2] === "barang") {
       this.$store.dispatch("constant/menu", 7);
-    } else if (routes[2] === "asset_tetap") {
+    } else if (routes[2] === "aset_tetap") {
       this.$store.dispatch("constant/menu", 8);
     } else if (routes[2] === "inventory_masuk") {
       this.$store.dispatch("constant/menu", 9);

@@ -6,21 +6,25 @@
           <v-col cols="12" md="4" class="brown accent-3">
             <v-card-text>
               <div class="text-center">
-                <img class="logo_polres" src="@/assets/logo.svg" />
-                <h1 class="text-center display-1 teal--text text--accent-3">POLRES JEMBRANA</h1>
+                <img src="@/assets/logo.svg" :width="imgWidth"/>
+                <h1 class="text-center text-h5 text-lg-h4 text-xl-h4 teal--text text--accent-3">
+                  POLRES JEMBRANA
+                </h1>
               </div>
             </v-card-text>
           </v-col>
           <v-col cols="12" md="8">
-            <v-card-text class="mt-12">
-              <h1 class="text-center display-2 teal--text text--accent-3">
+            <v-card-text class="mt-lg-12 mt-xl-12 mt-md-12 mt-xs-0">
+              <h1 class="text-center text-h5 text-lg-h4 text-xl-h4 teal--text text--accent-3">
                 Login Aplikasi Inventory dan Surat
               </h1>
               <h4 class="text-center mt-4">
                 <v-alert v-model="error" dismissible type="error">
                   {{ errorMessage }}
                 </v-alert>
-                <div v-show="!error">Pastikan username dan password dengan benar</div>
+                <div v-show="!error">
+                  Pastikan username dan password dengan benar
+                </div>
               </h4>
               <v-form>
                 <v-text-field
@@ -44,10 +48,11 @@
               </v-form>
             </v-card-text>
             <div class="text-center mt-3">
-              <v-btn rounded color="teal accent-3" dark @click="login">SIGN IN</v-btn>
+              <v-btn rounded color="teal accent-3" dark @click="login"
+                >SIGN IN</v-btn
+              >
             </div>
           </v-col>
-          
         </v-row>
       </v-card>
     </v-col>
@@ -131,18 +136,32 @@ export default {
         this.$store.dispatch("constant/set_error", val);
       },
     },
+    imgWidth() {
+      switch (this.$vuetify.breakpoint.name) {
+        case "xs":
+          return 100;
+        case "sm":
+          return 100;
+        case "md":
+          return 150;
+        case "lg":
+          return 150;
+        case "xl":
+          return 150;
+        default:
+          return 150;
+      }
+    },
   },
   mounted() {
     this.$store.dispatch("constant/remove_error");
   },
   methods: {
     login() {
-      
       this.$store.dispatch("user/login", {
         username: this.username,
         password: CryptoJS.MD5(this.password).toString(),
       });
-      
     },
   },
 };
@@ -164,5 +183,4 @@ export default {
   width: 80px;
   height: auto;
 }
-
 </style>

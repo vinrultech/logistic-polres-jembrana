@@ -263,31 +263,31 @@ let router = new Router({
       component: () => import( /* webpackChunkName: "about" */ './views/barang/edit.vue'),
     },
     {
-      path: '/admin/asset_tetap',
-      name: 'asset_tetap',
+      path: '/admin/aset_tetap',
+      name: 'aset_tetap',
       meta: {
         requiresAuth: true,
         layout: 'admin'
       },
-      component: () => import( /* webpackChunkName: "about" */ './views/asset_tetap/index.vue'),
+      component: () => import( /* webpackChunkName: "about" */ './views/aset_tetap/index.vue'),
     },
     {
-      path: '/admin/asset_tetap/create',
-      name: 'create_asset_tetap',
+      path: '/admin/aset_tetap/create',
+      name: 'create_aset_tetap',
       meta: {
         requiresAuth: true,
         layout: 'admin'
       },
-      component: () => import( /* webpackChunkName: "about" */ './views/asset_tetap/add.vue'),
+      component: () => import( /* webpackChunkName: "about" */ './views/aset_tetap/add.vue'),
     },
     {
-      path: '/admin/asset_tetap/edit/:id',
-      name: 'edit_asset_tetap',
+      path: '/admin/aset_tetap/edit/:row_id',
+      name: 'edit_aset_tetap',
       meta: {
         requiresAuth: true,
         layout: 'admin'
       },
-      component: () => import( /* webpackChunkName: "about" */ './views/asset_tetap/edit.vue'),
+      component: () => import( /* webpackChunkName: "about" */ './views/aset_tetap/edit.vue'),
     },
     {
       path: '/admin/inventory_masuk',
