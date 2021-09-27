@@ -170,6 +170,23 @@ func GetFilter(filters []string, where bool) string {
 	return q
 }
 
+func QueryAllJoin(table string, field string, selects []string, joins []Join, filters []string) string {
+	values := Select(selects)
+
+	q := QuerySelect(table, values)
+
+	if len(joins) > 0 {
+		for _, j := range joins {
+			q += LeftJoin(j.TableJoin, j.IDTable, j.IDTableJoin)
+		}
+	}
+
+	q += GetFilter(filters, true)
+
+	return q
+
+}
+
 func QueryPagingJoin(table string, field string, isFirst bool, selects []string, joins []Join, filters []string) string {
 	values := Select(selects)
 

@@ -224,7 +224,7 @@ export default {
         size: 20,
         role : ["superuser"]
       },
-      { heading: "Surat" , role : ["superuser", "unit_kerja"]},
+      { heading: "Menu Surat" , role : ["superuser", "unit_kerja"]},
       {
         icon: "fas fa-envelope",
         text: "Surat Masuk",
@@ -246,22 +246,21 @@ export default {
         size: 17,
         role : ["superuser", "unit_kerja"]
       },
-      { heading: "Inventory", role : ["superuser", "unit_kerja"] },
+      { heading: "Menu Inventory", role : ["superuser", "unit_kerja"] },
       {
         icon: "fas fa-shopping-basket",
-        text: "Barang",
+        text: "Inventory",
         href: "/admin/barang",
         size: 16,
         role : ["superuser", "unit_kerja"]
       },
       {
         icon: "fas fa-warehouse",
-        text: "Asset Tetap",
+        text: "Inventory Tetap",
         href: "/admin/aset_tetap",
-        size: 16,
+        size: 14,
         role : ["superuser", "unit_kerja"]
       },
-      { heading: "Tranksasi", role : ["superuser", "unit_kerja"] },
       {
         icon: "fas fa-database",
         text: "Inventory Masuk",

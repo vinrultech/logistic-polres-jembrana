@@ -161,7 +161,9 @@ func GetQueryRow(stmt *sqlx.Stmt, lastId int64, limit int, search string, filter
 
 	q = append(q, value...)
 
-	q = append(q, limit)
+	if limit != 0 {
+		q = append(q, limit)
+	}
 
 	rows, err := stmt.Query(q...)
 

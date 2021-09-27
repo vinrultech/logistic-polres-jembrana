@@ -113,3 +113,44 @@ CREATE TABLE "log_barangs" (
   "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE "log_barang_masuks" (
+  "id" serial NOT NULL,
+  "row_id" character varying(100) PRIMARY KEY,
+  "barang_id" integer NOT NULL,
+  "tanggal" character varying(20) NOT NULL,
+  "jumlah" integer NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE "log_barang_masuks"
+ALTER "barang_id" TYPE character varying(100),
+ALTER "barang_id" DROP DEFAULT,
+ALTER "barang_id" SET NOT NULL;
+COMMENT ON COLUMN "log_barang_masuks"."barang_id" IS '';
+COMMENT ON TABLE "log_barang_masuks" IS '';
+
+ALTER TABLE "log_barang_masuks"
+ADD "unit_kerja_id" character varying(100) NOT NULL;
+COMMENT ON TABLE "log_barang_masuks" IS '';
+
+ALTER TABLE "log_barang_masuks"
+DROP "unit_kerja_id";
+COMMENT ON TABLE "log_barang_masuks" IS '';
+
+ALTER TABLE "log_barang_masuks"
+ADD "unit_kerja_id" integer NOT NULL;
+COMMENT ON TABLE "log_barang_masuks" IS '';
+
+CREATE TABLE "log_barang_keluars" (
+  "id" serial NOT NULL,
+  "row_id" character varying(100) PRIMARY KEY,
+  "barang_id" character varying(100) NOT NULL,
+  "unit_kerja_id" integer NOT NULL,
+  "tanggal" character varying(20) NOT NULL,
+  "jumlah" integer NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+

@@ -222,3 +222,28 @@ func (a *App) FetchBarang(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, Barang)
 }
+
+func (a *App) AllBarang(c echo.Context) error {
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*constants.JwtTandaTanganOnlineClaims)
+
+	var filterValues []interface{}
+	var filters []string
+
+	//var items []models.SuratMasuk
+
+	if claims.UnitKerjaID != 0 {
+		filters = append(filters, " b.unit_kerja_id=? ")
+		filterValues = append(filterValues, int64(claims.UnitKerjaID))
+	}
+
+	items, err := a.M.AllBarang(filters, filterValues)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Error all Barang : %v", err))
+	}
+
+	return c.JSON(http.StatusOK, items)
+}

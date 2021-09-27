@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	"gitlab.com/vinrul.tech/log-polres-jembrana-surat/constants"
@@ -11,7 +12,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
-var tableBarang = "log_barangs"
+var tableBarang = "log_barangs AS b"
 
 type Barang struct {
 	ID        int64     `json:"id"`
@@ -222,6 +223,43 @@ func (m *Model) FetchBarang(rowID string) (Barang, error) {
 	}
 
 	return item, nil
+}
+
+func (m *Model) AllBarang(filters []string, filterValues []interface{}) ([]Barang, error) {
+
+	items := []Barang{}
+
+	joins := getJoinBarang()
+
+	sqlX := db.QueryAllJoin("log_barangs AS b", "b.id", getSelectBarang(), joins, filters)
+
+	sqlX = m.Db.Rebind(sqlX)
+
+	fmt.Println(sqlX)
+
+	stmt, err := m.Db.Preparex(sqlX)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
+	}
+
+	defer stmt.Close()
+
+	rows, err := GetQueryRow(stmt, 0, 0, "", "", filterValues)
+
+	if err != nil {
+		loggers.Log.Errorln(err.Error())
+		return items, err
+	}
+
+	items, err = getRowsBarang(rows, m)
+
+	if err != nil {
+		return items, err
+	}
+
+	return items, nil
 }
 
 func (m *Model) GetBarang(lastID int64, limit int, filters []string, filterValues []interface{}) ([]Barang, error) {

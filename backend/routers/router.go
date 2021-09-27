@@ -78,6 +78,7 @@ func SetupRouters(e *echo.Echo, app *controllers.App) {
 	admin.GET("/barang", app.GetBarang)
 	admin.GET("/barang/:row_id", app.FetchBarang)
 	admin.GET("/barang/search", app.SearchBarang)
+	admin.GET("/barang/all", app.AllBarang)
 	admin.DELETE("/barang/remove/:row_id", app.RemoveBarang)
 
 	//aset_tetap
@@ -103,4 +104,16 @@ func SetupRouters(e *echo.Echo, app *controllers.App) {
 	admin.GET("/metric/search", app.SearchMetric)
 	admin.GET("/metric/all", app.AllMetric)
 	admin.DELETE("/metric/remove/:id", app.RemoveMetric)
+
+	//inventory masuk
+	admin.POST("/inventory_masuk/create", app.CreateInventoryMasuk)
+	admin.GET("/inventory_masuk", app.GetInventoryMasuk)
+	admin.GET("/inventory_masuk/search", app.SearchInventoryMasuk)
+	admin.DELETE("/inventory_masuk/remove/:row_id", app.RemoveInventoryMasuk)
+
+	//inventory keluar
+	admin.POST("/inventory_keluar/create", app.CreateInventoryKeluar)
+	admin.GET("/inventory_keluar", app.GetInventoryKeluar)
+	admin.GET("/inventory_keluar/search", app.SearchInventoryKeluar)
+	admin.DELETE("/inventory_keluar/remove/:row_id", app.RemoveInventoryKeluar)
 }

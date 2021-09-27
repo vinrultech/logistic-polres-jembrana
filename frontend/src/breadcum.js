@@ -62,7 +62,7 @@ export const JUKNIS = (disabled) => {
 
 export const BARANG = (disabled) => {
     return {
-        text: "Barang",
+        text: "Inventory",
         disabled: disabled,
         href: "/admin/inventory",
         icon: "fas fa-shopping-basket",
@@ -72,7 +72,7 @@ export const BARANG = (disabled) => {
 
 export const ASSET_TETAP = (disabled) => {
     return {
-        text: "Asset Tetap",
+        text: "Inventory Tetap",
         disabled: disabled,
         href: "/admin/asset_tetap",
         icon: "fas fa-warehouse",
